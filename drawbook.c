@@ -19,6 +19,8 @@ void LOAD_Surface(char *fname, SDL_Surface *surf, SDL_Surface *screen){
 	surf=SDL_ConvertSurface(surf2,screen->format,SDL_HWSURFACE);
 	SDL_FreeSurface(surf2);
 }
+int linesss_x=0;
+int linesss_y=0;
 /*
 #include <libavcodec/avcodec.h>
 #include <libavutil/mathematics.h>
@@ -447,14 +449,20 @@ int main(int argc, char* argv[])
                 y = Event.button.y;
                 x2 = x1;
                 y2 = y;
+                                if (linesss==2){
+					drawing=0;
+					thickLineRGBA(screen, Event.button.x, Event.button.y,linesss_x,linesss_y, width, r[color],g[color],b[color],255);
+                                        linesss=0;
+				}
 				if (linesss==1){
+                                        linesss_x=Event.button.x;
+                                        linesss_y=Event.button.y;
 					drawing=0;
 					linesss=2;
 				}
-				if (linesss==2){
-					drawing=0;
-					thickLineRGBA(screen, x1, y, x2, y2, width, r[color],g[color],b[color],255);
-				}
+                                if (linesss==3){
+                                        linesss=1;
+                                }
 				if (legacy==0){
 					if (SDL_Button_mouse_down(button1,&Event)==1){
 						clear=1;
@@ -475,16 +483,14 @@ int main(int argc, char* argv[])
 						}else{
 							s=0;
 						}
-						itoa(s,savescreen,10);
+						sprintf(savescreen,"%d.png",s);
 						strcat(bmpname,savescreen);
-						strcat(bmpname,".png");
 						SDL_SavePNG(screen,bmpname);
 						memset(bmpname,0,99);
 					}
 					if (SDL_Button_mouse_down(button6,&Event)==1){
-						itoa(s,savescreen,10);
+						sprintf(savescreen,"%d.png",s);
 						strcat(bmpname,savescreen);
-						strcat(bmpname,".png");
 						buf=IMG_Load(bmpname);
 						SDL_BlitSurface(buf,NULL,screen,NULL);
 						memset(bmpname,0,99);
@@ -689,10 +695,9 @@ int main(int argc, char* argv[])
 			    }else{
 			        s=0;
 			    }
-			    itoa(s,savescreen,10);
+			    sprintf(savescreen,"%d.png",s);
 			    strcat(bmpname,savescreen);
-			    strcat(bmpname,".bmp");
-			    SDL_SaveBMP(screen,bmpname);
+			    SDL_SavePNG(screen,bmpname);
 			    memset(bmpname,0,99);
 			}else{
 			    buffer2[buffindex]=getmod('a',Event.key.keysym.mod);
@@ -701,10 +706,9 @@ int main(int argc, char* argv[])
 			break;
 		    case SDLK_l:;
 			if ((word==0)||(cntr==1)){
-                itoa(s,savescreen,10);
+                sprintf(savescreen,"%d.png",s);
     		    strcat(bmpname,savescreen);
-			    strcat(bmpname,".bmp");
-			    buf=SDL_LoadBMP(bmpname);
+			    buf=IMG_Load(bmpname);
 			    SDL_BlitSurface(buf,NULL,screen,NULL);
                 memset(bmpname,0,99);
 			}else{
