@@ -19,6 +19,8 @@ void LOAD_Surface(char *fname, SDL_Surface *surf, SDL_Surface *screen){
 	surf=SDL_ConvertSurface(surf2,screen->format,SDL_HWSURFACE);
 	SDL_FreeSurface(surf2);
 }
+int linesss_x=0;
+int linesss_y=0;
 /*
 #include <libavcodec/avcodec.h>
 #include <libavutil/mathematics.h>
@@ -60,6 +62,7 @@ void audio_encode_example(const char *filename){
 	d
 }*/
 uint8_t legacy=0;
+uint8_t linesss=0;
 /*
 #include <portaudio.h>
 typedef     float SAMPLE
@@ -363,8 +366,8 @@ int main(int argc, char* argv[])
 	SDL_Surface * ssss3=TTF_RenderText_Solid(font,"Dec",color99);
 	SDL_Surface * ssss4=TTF_RenderText_Solid(font,"Color",color99);
     SDL_Surface * ssss5=TTF_RenderText_Solid(font,"Save",color99);
-    SDL_Surface * ssss6=TTF_RenderText_Solid(font,"Load",color99);/*
-    SDL_Surface * ssss7=TTF_RenderText_Solid(font,"Rec",color99);*/
+    SDL_Surface * ssss6=TTF_RenderText_Solid(font,"Load",color99);
+    SDL_Surface * ssss7=TTF_RenderText_Solid(font,"Line",color99);
 	SDL_Rect c;
 	c.x=0;
 	c.y=0;
@@ -377,8 +380,8 @@ int main(int argc, char* argv[])
 	SDL_Button_t *button3 = SDL_Button(screen,160,0,80,50);
 	SDL_Button_t *button4 = SDL_Button(screen,240,0,160,50);
     SDL_Button_t *button5 = SDL_Button(screen,400,0,120,50);
-    SDL_Button_t *button6 = SDL_Button(screen,520,0,120,50);/*
-    SDL_Button_t *button7 = SDL_Button(screen,640,0,80,50);*/
+    SDL_Button_t *button6 = SDL_Button(screen,520,0,120,50);
+    SDL_Button_t *button7 = SDL_Button(screen,640,0,80,50);
 	SDL_BlitSurface(ssss,NULL,screen,&c);
     SDL_WM_SetCaption("Drawbook", "accessories-text-editor");
     SDL_Flip(screen);
@@ -421,10 +424,10 @@ int main(int argc, char* argv[])
 			c.x+=160;
 			SDL_BlitSurface(ssss5,NULL,screen,&c);
 			c.x+=120;
-			SDL_BlitSurface(ssss6,NULL,screen,&c);/*
-        c.x+=120;
-        c.w=80;
-        SDL_BlitSurface(ssss7,NULL,screen,&c);*/
+			SDL_BlitSurface(ssss6,NULL,screen,&c);
+			c.x+=120;
+			c.w=80;
+			SDL_BlitSurface(ssss7,NULL,screen,&c);
 		}
 		if (clear==1){
 			SDL_FillRect(screen,NULL,SDL_MapRGB(screen->format, 255,255,255));
@@ -446,6 +449,20 @@ int main(int argc, char* argv[])
                 y = Event.button.y;
                 x2 = x1;
                 y2 = y;
+                                if (linesss==2){
+					drawing=0;
+					thickLineRGBA(screen, Event.button.x, Event.button.y,linesss_x,linesss_y, width, r[color],g[color],b[color],255);
+                                        linesss=0;
+				}
+				if (linesss==1){
+                                        linesss_x=Event.button.x;
+                                        linesss_y=Event.button.y;
+					drawing=0;
+					linesss=2;
+				}
+                                if (linesss==3){
+                                        linesss=1;
+                                }
 				if (legacy==0){
 					if (SDL_Button_mouse_down(button1,&Event)==1){
 						clear=1;
@@ -466,19 +483,20 @@ int main(int argc, char* argv[])
 						}else{
 							s=0;
 						}
-						itoa(s,savescreen,10);
+						sprintf(savescreen,"%d.png",s);
 						strcat(bmpname,savescreen);
-						strcat(bmpname,".png");
 						SDL_SavePNG(screen,bmpname);
 						memset(bmpname,0,99);
 					}
 					if (SDL_Button_mouse_down(button6,&Event)==1){
-						itoa(s,savescreen,10);
+						sprintf(savescreen,"%d.png",s);
 						strcat(bmpname,savescreen);
-						strcat(bmpname,".png");
 						buf=IMG_Load(bmpname);
 						SDL_BlitSurface(buf,NULL,screen,NULL);
 						memset(bmpname,0,99);
+					}
+					if (SDL_Button_mouse_down(button7,&Event)==1){
+						linesss=1;
 					}
 				}
 /*                if (SDL_Button_mouse_down(button7,&Event)==1){
@@ -527,13 +545,16 @@ int main(int argc, char* argv[])
                 y2 = y;
             }
             else if (Event.type == SDL_MOUSEMOTION){
-                x1= Event.motion.x;
-                y=Event.motion.y;
-                if (drawing == 1){
-                    thickLineRGBA(screen, x1, y, x2, y2, width, r[color],g[color],b[color],255);
-                }
-                x2 = x1;
-                y2 = y;
+				if (linesss==0){
+	                x1= Event.motion.x;
+	                y=Event.motion.y;
+	                if (drawing == 1){
+	                    thickLineRGBA(screen, x1, y, x2, y2, width, r[color],g[color],b[color],255);
+	                }
+	                x2 = x1;
+	                y2 = y;
+				}
+                
             }
             else if (Event.type == SDL_VIDEORESIZE){
                 screenw=Event.resize.w;
@@ -674,10 +695,9 @@ int main(int argc, char* argv[])
 			    }else{
 			        s=0;
 			    }
-			    itoa(s,savescreen,10);
+			    sprintf(savescreen,"%d.png",s);
 			    strcat(bmpname,savescreen);
-			    strcat(bmpname,".bmp");
-			    SDL_SaveBMP(screen,bmpname);
+			    SDL_SavePNG(screen,bmpname);
 			    memset(bmpname,0,99);
 			}else{
 			    buffer2[buffindex]=getmod('a',Event.key.keysym.mod);
@@ -686,10 +706,9 @@ int main(int argc, char* argv[])
 			break;
 		    case SDLK_l:;
 			if ((word==0)||(cntr==1)){
-                itoa(s,savescreen,10);
+                sprintf(savescreen,"%d.png",s);
     		    strcat(bmpname,savescreen);
-			    strcat(bmpname,".bmp");
-			    buf=SDL_LoadBMP(bmpname);
+			    buf=IMG_Load(bmpname);
 			    SDL_BlitSurface(buf,NULL,screen,NULL);
                 memset(bmpname,0,99);
 			}else{

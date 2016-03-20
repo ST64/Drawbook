@@ -7,7 +7,7 @@ AR=ar
 windows: $(EXE) drawbook
 	echo YAY!
 linux: Drawbook2_D
-	mv Drawbook2_D Drawbook
+	mv Drawbook2_D Drawbook_linux
 	echo YAY!
 Drawbook2_D: $(SRC) libSDL_Button.a
 	$(CC) $(CFLAGS) $(LDFLAGS) $(SRC) -o Drawbook2_D -lSDLmain -lSDL -lSDL_ttf -lSDL_gfx -I/usr/include/ -I/usr/local/include -I. -L. -lSDL_Button -lSDL_image -lpng -lz -lSDL
@@ -16,7 +16,7 @@ all: $(EXE) drawbook
 $(EXE): $(SRC) libSDL_Button.a
 	$(CC) $(CFLAGS) -lmingw32 $(LDFLAGS) $(SRC) -o $(EXE) -lmingw32 -lSDLmain -lSDL -lSDL_ttf -lSDL_gfx -I/usr/include -I/usr/local/include -I. -L. -lSDL_Button -lSDL_image -lpng -lz -lSDL
 drawbook: $(EXE)
-	mv $(EXE) Drawbook.exe
+	mv $(EXE) Drawbook_Windows.exe
 install: $(EXE)
 	cp Drawbook /usr/local/bin
 libSDL_Button.a: SDL_Button.c SDL_Button.h SDL_colorpick.c SDL_colorpick.h
