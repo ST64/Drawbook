@@ -11,141 +11,8 @@
 #include <stdbool.h>
 #include <savepng.h>
 #include <SDL_colorpick.h>
-void Init_IMG(){
-	IMG_Init(IMG_INIT_JPG|IMG_INIT_PNG);
-}
-void LOAD_Surface(char *fname, SDL_Surface *surf, SDL_Surface *screen){
-	SDL_Surface *surf2=IMG_Load(fname);
-	surf=SDL_ConvertSurface(surf2,screen->format,SDL_HWSURFACE);
-	SDL_FreeSurface(surf2);
-}
-int linesss_x=0;
-int linesss_y=0;
-/*
-#include <libavcodec/avcodec.h>
-#include <libavutil/mathematics.h>
-#define INBUF_SIZE 4096
-#define AUDIO_INBUF_SIZE 20480
-#define AUDIO_REFILL_THRESH 4096
-void audio_encode_example(const char *filename){
-	AVCodec *codec;
-	AVCodecContext *c=NULL;
-	int frame_size,i,j,out_size,outbuf_size;
-	FILE *f;
-	short *samples;
-	float t,tincr;
-	uint8_t *outbuf;
-	printf("Audio encoding");
-	codec=avcodec_find_encoder(CODEC_ID_MP3);
-	if (!codec){
-		fprintf(stderr,"codec not found\n");
-		exit(1);
-	}
-	c=avcodec_alloc_context();
-	c->bit_rate=64000;
-	c->sample_rate=44100;
-	c->channels=2;
-	if (avcodec_open(c,codec)<0){
-		fprintf(stderr,"could not open codec\n");
-		exit(1);
-	}
-	frame_size=c->frame_size;
-	samples=malloc(frame_size*2*c->channels);
-	outbuf_size=10000;
-	oubuf=malloc(outbuf_size);
-	f=fopen(filename,"wb");
-	if (!f){
-		fprintf(stderr,"could not open %s\n",filename);
-		exit(1);
-	}
-	SDL_AudioSpec wanted=OpenDemAudios();
-	d
-}*/
+#define Init_IMG() IMG_Init(IMG_INIT_JPG|IMG_INIT_PNG);
 uint8_t legacy=0;
-uint8_t linesss=0;
-/*
-#include <portaudio.h>
-typedef     float SAMPLE
-#define     SAMPLE_RATE   (44100)
-#define     FRAMES_PER_BUFFER   (512)
-#define 	NUM_SECONDS   (10)
-#define 	NUM_CHANNELS   (2)
-#define 	DITHER_FLAG   (0)
-#define 	WRITE_TO_FILE   (0)
-#define 	PA_SAMPLE_TYPE   paFloat32
-#define 	SAMPLE_SILENCE   (0.0f)
-#define 	PRINTF_S_FORMAT   "%.8f"
-typedef struct{
-    int frameIndex;
-    int maxFrameIndex;
-    SAMPLE *recordedSamples;
-}paTestData;
-static int recordCallback(const void *inputBuffer,void *outputBuffer,unsinged long framesPerBuffer,const PaStreamCallbackTimeInfo* timeInfo,PaStreamCallbackFlags statusFlags,void *userData){
-    paTestData *data=(paTestData*)userData;
-    const SAMPLE *rptr = (const SAMPLE*)inputBuffer;
-    SAMPLE *wptr = &data->recordedSamples[data->flameIndex*NUM_CHANNELS];
-    long framesToCalc;
-    long i;
-    int finished;
-    unsigned long framesLeft=data->maxFrameIndex-data->frameIndex;
-    (void) outputBuffer;
-    (void) timeInfo;
-    (void) statusFlags;
-    (void) userData;
-    if (framesLeft < framesPerBuffer){
-        framesToCalc=framesLeft
-        finished=paComplete;
-    }
-    else{
-        framesToCalc=framesPerBuffer;
-        finished=paContinue;
-    }
-    if (inputBuffer==NULL){
-        for (i=0;i<framesToCalc;i++){
-            *wptr++=SAMPLE_SILENCE;
-            if (NUM_CHANNELS==2){*wptr++=SAMPLE_SILENCE;}
-        }
-    }else{
-        for(i=0;i<framesToCalc;i++){
-            *wptr++=*rptr++;
-            if (NUM_CHANNELS==2){*wptr++=*rptr++;}
-        }
-    }
-    data->frameIndex+=framesToCalc;
-    return finished;
-}
-static int playCallback( const void *inputBuffer, void *outputBuffer,unsigned long framesPerBuffer,const PaStreamCallbackTimeInfo* timeInfo,PaStreamCallbackFlags statusFlags,void *userData ){
-    paTestData *data=(paTestData*)userData;
-    SAMPLE*rptr=&data->recordedSamples[data->frameIndex*NUM_CHANNELS];
-    SAMPLE*wptr=(SAMPLE*)outputBuffer;
-    unsigned int i;
-    int finished;
-    unsigned int framesLeft=data->maxFrameIndex-data->frameIndex;
-    (void) inputBuffer;
-    (void) timeInfo;
-    (void) statusFlags;
-    (void) userData;
-    if (framesLeft<framesPerBuffer){
-        for( i=0;i<framesLeft;i++){
-            *wptr++=*rptr++;
-            if (NUM_CHANNELS==2){*wptr++=0;}
-        }
-        for (;i<framesPerBuffer;i++){
-            *wptr++=0;
-            if (NUM_CHANNELS==2){*wptr++=0;}
-        }
-        data->frameIndex+=framesLeft;
-        finished=paComplete;
-    }else{
-        for (i=0;i<framesPerBuffer;i++){
-            *wptr++=*rptr++;
-            if (NUM_CHANNELS==2){*wptr++=*rptr++;}
-        }
-        data->frameIndex+=framesPerBuffer;
-        finished=paContinue;
-    }
-    return finished;
-}*/
 uint8_t running = 1;
 uint8_t drawing = 0;
 int x1,y,x2,y2;
@@ -176,18 +43,6 @@ int gmask = 0x0000ff00;
 int bmask = 0x00ff0000;
 int amask = 0xff000000;
 #endif
-/*
-typedef struct{
-    int num_menu;
-    int *num_menu2;
-    char **labels;
-    bool *selected;
-    SDL_Surface **menus;
-    TTF_Font *font1=TTF_OpenFont("Drawbook.ttf",15);
-    int fontsize;
-    SDL_Color color={0,0,0};
-}SDL_Menu;
-*/
 char getmod(char keyvalue,SDLMod modvalue){
     char d=0;
     if ((keyvalue>=97)&&(keyvalue<=122)&&((modvalue==KMOD_CAPS)||(modvalue==KMOD_RSHIFT)||(modvalue==KMOD_LSHIFT))){
@@ -284,51 +139,66 @@ char getkey(SDLKey keymapvalue){
 	case SDLK_PERIOD:;
 	    c='.';
 	    break;
-	case SDLK_QUESTION:;
-	    c="?";
-	    break;
 	case SDLK_AT:;
-	    c="@";
+		c='@';
+		break;
+	case SDLK_HASH:;
+		c='#';
+		break;
+	case SDLK_DOLLAR:;
+		c='$';
+		break;
+	case SDLK_CARET:;
+		c='^';
+		break;
+	case SDLK_AMPERSAND:;
+		c='&';
+		break;
+	case SDLK_ASTERISK:;
+		c='*';
+		break;
+	case SDLK_QUESTION:;
+	    c='?';
 	    break;
 	case SDLK_COLON:;
-	    c=":";
+	    c=':';
 	    break;
+	case SDLK_EXCLAIM:;
+		c='!';
+		break;
+	case SDLK_LEFTPAREN:;
+		c='(';
+		break;
+	case SDLK_RIGHTPAREN:;
+		c=')';
+		break;
+	case SDLK_LEFTBRACKET:;
+		c='[';
+		break;
+	case SDLK_RIGHTBRACKET:;
+		c=']';
+		break;
+	case SDLK_BACKSLASH:;
+		c='\\';
+		break;
+	case SDLK_UNDERSCORE:;
+		c='_';
+		break;
+	case SDLK_SLASH:;
+		c='/';
+		if (shift==1){
+			c='?';
+		}
+		break;
+	default:;
+		c='\0';
+		break;
     }
     return c;
 }
 int main(int argc, char* argv[])
 {
-/*    PaStreamParameters inputParameters,outputParameters;
-    PaStream *stream
-    PaError err=paNoError;
-    paTestData data;
-    int i;
-    int totalFrames;
-    int numSamples;
-    int numBytes;
-    SAMPLE max,val;
-    double average;
-    data.maxFrameIndex=totalFrames=SAMPLE_RATE*10;
-    data.frameIndex=0;
-    numSampes=totalFrames*NUM_CHANNELS;
-    numBytes=numSamples*sizeof(SAMPLE);
-    data.recordedSameples=(SAMEPLE*)malloc(numBytes);
-    if (data.recordedSamples==NULL){
-        printf("Could not allocate record array.\n");
-        goto done;
-    }
-    for (i=0;i<numSamples;i++){data.recordedSamples[i]=0;}
-    err=Pa_Initialize();
-    if (err!=paNoError){goto done;}
-    inputParameters.device=Pa_GetDefaultInputDevice();
-    if (inputParameters.device==paNoDevice){
-        fprintf(stderr,"Error: No default input device.\n");
-        goto done;
-    }
-    inputParameters.channelCount=2;
-    inputParameters.sampleFormat=PA_SAMPLE_TYPE;
-    inputParameters.suggestedLatency=Pa_GetDeviceInfo(inputParameters.device)->defaultLowInputLatency;
-    inputParameters.hostApiSpecificStreamInfo=NULL;*/
+	argc=argc;
     FILE *textfile=fopen("filetext.txt","w");
     if (SDL_Init( SDL_INIT_VIDEO ) == -1){
         return 1;
@@ -345,19 +215,12 @@ int main(int argc, char* argv[])
     SDL_Event Event;
     SDL_Rect wordrect;
     wordrect.x=0;
-    wordrect.y=fontsize*line;
+    wordrect.y=(fontsize+8)*line;
     screenh=590;
     screenw=945;
     screen = SDL_SetVideoMode( 945, 590, 8, SDL_HWSURFACE|SDL_DOUBLEBUF|SDL_RESIZABLE);
     SDL_Surface *buf= SDL_CreateRGBSurface(SDL_HWSURFACE, screenw, screenh, 8,rmask,gmask,bmask,amask);
-    SDL_Color color99={0,0,0};
-/*    SDL_Menu m;
-    m.num_menu=3 //File,Pen,Text
-    m.num_menu2={4,4,3}
-    m.labels={{"File","New","Save","Load"},{"Pen","Inc","Dec","Clr"},{"Text","Enab","Disa"}};
-    m.fontsize=TTF_FontHeight(m.font1);
-    m.menus={{TTF_RenderText_Solid(font1,labels[0][0],color99),TTF_RenderText_Solid(m.font1,labels[0][1],color99),TTF_RenderText_Solid(m.font1,labels[0][2],color99),TTF_RenderText_Solid(m.font1,labels[0][3])},{TTF_RenderText_Solid(m.font1,labels[1][0],color99),TTF_RenderText_Solid(m.font1,labels[1][1],color99),TTF_RenderText_Solid(m.font1,labels[1][2],color99),TTF_RenderText_Solid(m.font1,labels[1][3])},{TTF_RenderText_Solid(m.font1,labels[2][0],color99),TTF_RenderText_Solid(m.font1,labels[2][1],color99),TTF_RenderText_Solid(m.font1,labels[2][2])}};
-    m.selected={false,false,false} */
+    SDL_Color color99={0,0,0,0};
     if (screen == NULL){
         return 1;
     }
@@ -367,8 +230,7 @@ int main(int argc, char* argv[])
 	SDL_Surface * ssss4=TTF_RenderText_Solid(font,"Color",color99);
     SDL_Surface * ssss5=TTF_RenderText_Solid(font,"Save",color99);
     SDL_Surface * ssss6=TTF_RenderText_Solid(font,"Load",color99);
-    SDL_Surface * ssss7=TTF_RenderText_Solid(font,"Line",color99);
-	SDL_Rect c;
+ 	SDL_Rect c;
 	c.x=0;
 	c.y=0;
 	c.h=50;
@@ -381,7 +243,6 @@ int main(int argc, char* argv[])
 	SDL_Button_t *button4 = SDL_Button(screen,240,0,160,50);
     SDL_Button_t *button5 = SDL_Button(screen,400,0,120,50);
     SDL_Button_t *button6 = SDL_Button(screen,520,0,120,50);
-    SDL_Button_t *button7 = SDL_Button(screen,640,0,80,50);
 	SDL_BlitSurface(ssss,NULL,screen,&c);
     SDL_WM_SetCaption("Drawbook", "accessories-text-editor");
     SDL_Flip(screen);
@@ -424,10 +285,10 @@ int main(int argc, char* argv[])
 			c.x+=160;
 			SDL_BlitSurface(ssss5,NULL,screen,&c);
 			c.x+=120;
-			SDL_BlitSurface(ssss6,NULL,screen,&c);
-			c.x+=120;
-			c.w=80;
-			SDL_BlitSurface(ssss7,NULL,screen,&c);
+			SDL_BlitSurface(ssss6,NULL,screen,&c);/*
+        c.x+=120;
+        c.w=80;
+        SDL_BlitSurface(ssss7,NULL,screen,&c);*/
 		}
 		if (clear==1){
 			SDL_FillRect(screen,NULL,SDL_MapRGB(screen->format, 255,255,255));
@@ -449,20 +310,6 @@ int main(int argc, char* argv[])
                 y = Event.button.y;
                 x2 = x1;
                 y2 = y;
-                                if (linesss==2){
-					drawing=0;
-					thickLineRGBA(screen, Event.button.x, Event.button.y,linesss_x,linesss_y, width, r[color],g[color],b[color],255);
-                                        linesss=0;
-				}
-				if (linesss==1){
-                                        linesss_x=Event.button.x;
-                                        linesss_y=Event.button.y;
-					drawing=0;
-					linesss=2;
-				}
-                                if (linesss==3){
-                                        linesss=1;
-                                }
 				if (legacy==0){
 					if (SDL_Button_mouse_down(button1,&Event)==1){
 						clear=1;
@@ -483,59 +330,21 @@ int main(int argc, char* argv[])
 						}else{
 							s=0;
 						}
-						sprintf(savescreen,"%d.png",s);
+						itoa(s,savescreen,10);
 						strcat(bmpname,savescreen);
+						strcat(bmpname,".png");
 						SDL_SavePNG(screen,bmpname);
 						memset(bmpname,0,99);
 					}
 					if (SDL_Button_mouse_down(button6,&Event)==1){
-						sprintf(savescreen,"%d.png",s);
+						itoa(s,savescreen,10);
 						strcat(bmpname,savescreen);
+						strcat(bmpname,".png");
 						buf=IMG_Load(bmpname);
 						SDL_BlitSurface(buf,NULL,screen,NULL);
 						memset(bmpname,0,99);
 					}
-					if (SDL_Button_mouse_down(button7,&Event)==1){
-						linesss=1;
-					}
 				}
-/*                if (SDL_Button_mouse_down(button7,&Event)==1){
-                    err=Pa_OpenStream(&stream,&inputParameters,NULL,SAMPLE_RATE,FRAMES_PER_BUFFER,paClipOff,recordCallback,&data);
-                    if (err!=paNoError){goto done;}
-                    err=Pa_StartStream(stream);
-                    if (err!=paNoError){goto done;}
-                    printf("\n=== Now recording!! Please speak into the microphone. ===\n");
-                    fflush(stdout);
-                    while( ( err = Pa_IsStreamActive( stream ) ) == 1 ){
-                        Pa_Sleep(1000);
-                        printf("index=%d\n",data.frameIndex);
-                        fflush(stdout);
-                    }
-                    if (err<0){goto done;}
-                    err=Pa_CloseStream(stream);
-                    if (err!=paNoError){goto done;}
-                    max=0;
-                    average=0.0;
-                    for (i=0;i<numSamples;i++){
-                        val=data.recordedSamples[i];
-                        if (val<0)val=-val;
-                        if (val>max){
-                            max=val;
-                        }
-                        average+=val;
-                    }
-                    average=average/(double)numSamples;
-                    printf("sample max amplitude = "PRINTF_S_FORMAT"\n",max);
-                    printf("sample average: %2f\n",average);
-                    FILE *fid=fopen("recorded.raw","wb");
-                    if (fid==NULL){
-                        printf("Could not open file");
-                    }else{
-                        fwrite(data.recordedSamples,numSamples*sizeof(SAMPLE),totalFrames,fid);
-                        fclose(fid);
-                        printf("Wrote data to recorded.raw\n");
-                    }
-                }*/
             }
             else if (Event.type == SDL_MOUSEBUTTONUP){
                 drawing = 0;
@@ -545,16 +354,13 @@ int main(int argc, char* argv[])
                 y2 = y;
             }
             else if (Event.type == SDL_MOUSEMOTION){
-				if (linesss==0){
-	                x1= Event.motion.x;
-	                y=Event.motion.y;
-	                if (drawing == 1){
-	                    thickLineRGBA(screen, x1, y, x2, y2, width, r[color],g[color],b[color],255);
-	                }
-	                x2 = x1;
-	                y2 = y;
-				}
-                
+                x1= Event.motion.x;
+                y=Event.motion.y;
+                if (drawing == 1){
+                    thickLineRGBA(screen, x1, y, x2,y2,width, r[color],g[color],b[color],255);
+                }
+                x2 = x1;
+                y2 = y;
             }
             else if (Event.type == SDL_VIDEORESIZE){
                 screenw=Event.resize.w;
@@ -602,67 +408,99 @@ int main(int argc, char* argv[])
 			    running=0;
 			}else{
 			     buffer2[buffindex]='0';
+				 if (shift==1){
+					buffer2[buffindex]=getkey(SDLK_RIGHTPAREN);
+				 }
 			     buffindex++;
 			}
 			break;
 		    case SDLK_1:;
 			if (word==1){
 			     buffer2[buffindex]='1';
+				 if (shift==1){
+					buffer2[buffindex]='!';
+				 }
 			     buffindex++;
 			}
 			break;
 		    case SDLK_2:;
-			legacy=1;
-			c.x=0;
-			c.y=0;
-			c.h=50;
-			c.w=640;
-			SDL_FillRect(screen,&c,SDL_MapRGB(screen->format,255,255,255));
+			if (word==0){
+				legacy=1;
+				c.x=0;
+				c.y=0;
+				c.h=50;
+				c.w=640;
+				SDL_FillRect(screen,&c,SDL_MapRGB(screen->format,255,255,255));
+			}
 			if (word==1){
-			     buffer2[buffindex]='2';
-			     buffindex++;
+			    buffer2[buffindex]='2';
+				if (shift==1){
+					buffer2[buffindex]=getkey(SDLK_AT);
+				}
+			    buffindex++;
 			}
 			break;
 		    case SDLK_3:;
 			legacy=0;
 			if (word==1){
 			     buffer2[buffindex]='3';
+				 if (shift==1){
+					buffer2[buffindex]=getkey(SDLK_HASH);
+				 }
 			     buffindex++;
 			}
 			break;
 		    case SDLK_4:;
 			if (word==1){
 			     buffer2[buffindex]='4';
+				 if (shift==1){
+					buffer2[buffindex]=getkey(SDLK_DOLLAR);
+				 }
 			     buffindex++;
 			}
 			break;
 		    case SDLK_5:;
 			if (word==1){
 			     buffer2[buffindex]='5';
+				 if (shift==1){
+					buffer2[buffindex]='%';
+				 }
 			     buffindex++;
 			}
 			break;
 		    case SDLK_6:;
 			if (word==1){
 			     buffer2[buffindex]='6';
+				 if (shift==1){
+					buffer2[buffindex]=getkey(SDLK_CARET);
+				 }
 			     buffindex++;
 			}
 			break;
 		    case SDLK_7:;
 			if (word==1){
 			     buffer2[buffindex]='7';
+				 if (shift==1){
+					buffer2[buffindex]=getkey(SDLK_AMPERSAND);
+				 }
 			     buffindex++;
 			}
 			break;
 		    case SDLK_8:;
 			if (word==1){
 			     buffer2[buffindex]='8';
+				 if (shift==1){
+					buffer2[buffindex]=getkey(SDLK_ASTERISK);
+				 }
 			     buffindex++;
 			}
 			break;
 		    case SDLK_9:;
 			if (word==1){
 			     buffer2[buffindex]='9';
+				 if (shift==1){
+					buffer2[buffindex]=getkey(SDLK_LEFTPAREN);
+				 }
 			     buffindex++;
 			}
 			break;
@@ -695,9 +533,10 @@ int main(int argc, char* argv[])
 			    }else{
 			        s=0;
 			    }
-			    sprintf(savescreen,"%d.png",s);
+			    itoa(s,savescreen,10);
 			    strcat(bmpname,savescreen);
-			    SDL_SavePNG(screen,bmpname);
+			    strcat(bmpname,".bmp");
+			    SDL_SaveBMP(screen,bmpname);
 			    memset(bmpname,0,99);
 			}else{
 			    buffer2[buffindex]=getmod('a',Event.key.keysym.mod);
@@ -706,9 +545,10 @@ int main(int argc, char* argv[])
 			break;
 		    case SDLK_l:;
 			if ((word==0)||(cntr==1)){
-                sprintf(savescreen,"%d.png",s);
+                itoa(s,savescreen,10);
     		    strcat(bmpname,savescreen);
-			    buf=IMG_Load(bmpname);
+			    strcat(bmpname,".bmp");
+			    buf=SDL_LoadBMP(bmpname);
 			    SDL_BlitSurface(buf,NULL,screen,NULL);
                 memset(bmpname,0,99);
 			}else{
@@ -801,6 +641,7 @@ done:
 	SDL_FreeSurface(button4->internal_surface);
     SDL_Quit();
     TTF_Quit();
+	(void) argv;
     exit(0);
     return 0;
 }
