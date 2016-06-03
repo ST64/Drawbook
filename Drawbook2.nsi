@@ -1,5 +1,5 @@
 Name "Drawbook"
-OutFile "Drawbook_Setup3.exe"
+OutFile "Drawbook_Setup_V0.5.4_dlls.exe"
 
 !include "Sections.nsh"
 !include "MUI.nsh"
@@ -11,8 +11,8 @@ OutFile "Drawbook_Setup3.exe"
 !insertmacro MUI_PAGE_LICENSE "COPYING.txt"
 !insertmacro MUI_PAGE_COMPONENTS
 
-!define MUI_TEXT_LICENSE_TITLE "Agree to the LGPL license"
-!define MUI_TEXT_COMPONENTS_TITLE "What do you want to install?"
+LangString MUI_TEXT_LICENSE_TITLE ${LANG_ENGLISH} "Agree to the LGPL license"
+LangString MUI_TEXT_COMPONENTS_TITLE ${LANG_ENGLISH} "What do you want to install?"
 
 Page directory
 Page instfiles
@@ -22,12 +22,24 @@ DirText "Where will this install to?"
 Section "Core"
 SetOutPath $INSTDIR
 File Drawbook.exe
-File Drawbook.ttf
+File Color.png
+File down.png
+File Load.png
+File new.png
+File Save.png
+File text.png
+File text2.png
+File up.png
 WriteUninstaller $INSTDIR\Uninstall.exe
 SectionEnd
 
+Section "TTF Files"
+SetOutPath $INSTDIR\TTF
+File TTF\\Drawbook.ttf
+SectionEnd
+
 Section "Copyright and Docs"
-SetOutPath "$EXEDIR\Documentation"
+SetOutPath "$INSTDIR\Documentation"
 File README.txt
 File COPYING.txt
 SectionEnd
@@ -38,22 +50,24 @@ File SDL.dll
 File libSDL_gfx-15.dll
 File SDL_ttf.dll
 File libSDL_Button.a
+File libpng16-16.dll
+File libjpeg-9.dll
+File zlib1.dll
+File SDL_image.dll
 SectionEnd
 
 Section "Source code"
-SetOutPath "$EXEDIR\src"
-File Makefile
-File drawbook.c
-File SDL_Button.c
-File SDL_Button.h
+SetOutPath "$INSTDIR\src"
+File src\\Makefile
+File src\\drawbook.c
+File src\\SDL_Button.c
+File src\\SDL_Button.h
 File libSDL_Button.a
-SectionEnd
-
-Section "Library Sources"
-SetOutPath "$EXEDIR\Libs"
-File SDL_gfx-2.0.25.tar.xz
-File SDL_ttf-2.0.11.tar.xz
-File SDL-1.2.15.tar.xz
+File src\\SDL_colorpick.c
+File src\\SDL_colorpick.h
+File src\\savepng.c
+File src\\savepng.h
+File text_editor_2.cpp
 SectionEnd
 
 Section "Uninstall"
