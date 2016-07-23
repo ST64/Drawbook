@@ -11,7 +11,7 @@
 #include <stdbool.h>
 #include <savepng.h>
 #include <SDL_colorpick.h>
-#define Init_IMG() IMG_Init(IMG_INIT_JPG|IMG_INIT_PNG);
+#define Init_IMG() IMG_Init(IMG_INIT_PNG);
 uint8_t legacy=0;
 uint8_t running = 1;
 uint8_t drawing = 0;
@@ -43,6 +43,7 @@ int gmask = 0x0000ff00;
 int bmask = 0x00ff0000;
 int amask = 0xff000000;
 #endif
+
 char getmod(char keyvalue,SDLMod modvalue){
     char d=0;
     if ((keyvalue>=97)&&(keyvalue<=122)&&((modvalue==KMOD_CAPS)||(modvalue==KMOD_RSHIFT)||(modvalue==KMOD_LSHIFT))){
@@ -199,7 +200,6 @@ char getkey(SDLKey keymapvalue){
 int main(int argc, char* argv[])
 {
 	argc=argc;
-    FILE *textfile=fopen("filetext.txt","w");
     if (SDL_Init( SDL_INIT_VIDEO ) == -1){
         return 1;
     }
@@ -208,28 +208,30 @@ int main(int argc, char* argv[])
 	exit(2);
     }
     TTF_Font *font;
-    font=TTF_OpenFont("Drawbook.ttf",25);
+    font=TTF_OpenFont("TTF\\Drawbook.ttf",25);
     uint32_t fontsize=TTF_FontHeight(font);
     SDL_Surface *screen = NULL;
     SDL_Rect textrect;
     SDL_Event Event;
     SDL_Rect wordrect;
     wordrect.x=0;
-    wordrect.y=(fontsize+8)*line;
-    screenh=590;
-    screenw=945;
-    screen = SDL_SetVideoMode( 945, 590, 8, SDL_HWSURFACE|SDL_DOUBLEBUF|SDL_RESIZABLE);
+    wordrect.y=50+(fontsize+8)*line;
+    screenh=900;
+    screenw=1200;
+    screen = SDL_SetVideoMode( 950, 900, 8, SDL_HWSURFACE|SDL_DOUBLEBUF|SDL_RESIZABLE);
     SDL_Surface *buf= SDL_CreateRGBSurface(SDL_HWSURFACE, screenw, screenh, 8,rmask,gmask,bmask,amask);
     SDL_Color color99={0,0,0,0};
     if (screen == NULL){
         return 1;
     }
-	SDL_Surface * ssss= TTF_RenderText_Solid(font,"New",color99);
-	SDL_Surface * ssss2=TTF_RenderText_Solid(font,"Inc",color99);
-	SDL_Surface * ssss3=TTF_RenderText_Solid(font,"Dec",color99);
-	SDL_Surface * ssss4=TTF_RenderText_Solid(font,"Color",color99);
-    SDL_Surface * ssss5=TTF_RenderText_Solid(font,"Save",color99);
-    SDL_Surface * ssss6=TTF_RenderText_Solid(font,"Load",color99);
+	SDL_Surface * buttonsurf= IMG_Load("new.png");
+	SDL_Surface * buttonsurf2=IMG_Load("up.png");
+	SDL_Surface * buttonsurf3=IMG_Load("down.png");
+	SDL_Surface * buttonsurf4=IMG_Load("Color.png");
+    SDL_Surface * buttonsurf5=IMG_Load("Save.png");
+    SDL_Surface * buttonsurf6=IMG_Load("Load.png");
+	SDL_Surface * buttonsurf7=IMG_Load("text.png");
+	SDL_Surface * buttonsurf8=IMG_Load("text2.png");
  	SDL_Rect c;
 	c.x=0;
 	c.y=0;
@@ -237,13 +239,15 @@ int main(int argc, char* argv[])
 	c.w=80;
 	SDL_FillRect(screen,NULL,SDL_MapRGB(screen->format, 255,255,255));
 	SDL_FillRect(screen,&c,SDL_MapRGB(screen->format, 68,68,68));
-	SDL_Button_t *button1 = SDL_Button(screen,0,0,80,50);
-	SDL_Button_t *button2 = SDL_Button(screen,80,0,80,50);
-	SDL_Button_t *button3 = SDL_Button(screen,160,0,80,50);
-	SDL_Button_t *button4 = SDL_Button(screen,240,0,160,50);
-    SDL_Button_t *button5 = SDL_Button(screen,400,0,120,50);
-    SDL_Button_t *button6 = SDL_Button(screen,520,0,120,50);
-	SDL_BlitSurface(ssss,NULL,screen,&c);
+	SDL_Button_t *button1 = SDL_Button(screen,0,0,200,50);
+	SDL_Button_t *button2 = SDL_Button(screen,200,0,75,100);
+	SDL_Button_t *button3 = SDL_Button(screen,275,0,75,100);
+	SDL_Button_t *button4 = SDL_Button(screen,350,0,200,50);
+    SDL_Button_t *button5 = SDL_Button(screen,550,0,200,50);
+    SDL_Button_t *button6 = SDL_Button(screen,750,0,200,50);
+	SDL_Button_t *button7 = SDL_Button(screen,0,50,200,50);
+	SDL_Button_t *button8 = SDL_Button(screen,350,50,200,50);
+	SDL_BlitSurface(buttonsurf,NULL,screen,&c);
     SDL_WM_SetCaption("Drawbook", "accessories-text-editor");
     SDL_Flip(screen);
     SDL_Surface *text_surface=TTF_RenderText_Solid(font," ",color99);
@@ -252,43 +256,52 @@ int main(int argc, char* argv[])
 			c.x=0;
 			c.y=0;
 			c.h=50;
-			c.w=80;
+			c.w=200;
+/*			SDL_FillRect(screen,&c,SDL_MapRGB(screen->format, 138,138,138));
+			c.x+=200;
 			SDL_FillRect(screen,&c,SDL_MapRGB(screen->format, 138,138,138));
-			c.x+=80;
+			c.x+=200;
 			SDL_FillRect(screen,&c,SDL_MapRGB(screen->format, 138,138,138));
-			c.x+=80;
+			c.x+=200;
 			SDL_FillRect(screen,&c,SDL_MapRGB(screen->format, 138,138,138));
-			c.x+=80;
-			c.w+=80;
+			c.x+=200;
 			SDL_FillRect(screen,&c,SDL_MapRGB(screen->format, 138,138,138));
-			c.w-=40;
-			c.x+=160;
+			c.x+=200;
 			SDL_FillRect(screen,&c,SDL_MapRGB(screen->format, 138,138,138));
-			c.x+=120;
-			SDL_FillRect(screen,&c,SDL_MapRGB(screen->format, 138,138,138));/*
 			c.x+=120;
 			c.w=80;
 			SDL_FillRect(screen,&c,SDL_MapRGB(screen->format, 138,138,138));*/
 			c.x=0;
 			c.y=0;
 			c.h=50;
-			c.w=80;
-			SDL_BlitSurface(ssss,NULL,screen,&c);
-			c.x+=80;
-			SDL_BlitSurface(ssss2,NULL,screen,&c);
-			c.x+=80;
-			SDL_BlitSurface(ssss3,NULL,screen,&c);
-			c.x+=80;
-			c.w+=80;
-			SDL_BlitSurface(ssss4,NULL,screen,&c);
-			c.w-=40;
-			c.x+=160;
-			SDL_BlitSurface(ssss5,NULL,screen,&c);
-			c.x+=120;
-			SDL_BlitSurface(ssss6,NULL,screen,&c);/*
+			c.w=200;
+			SDL_BlitSurface(buttonsurf,NULL,screen,&c);
+			c.w=75;
+			c.h=100;
+			c.x+=200;
+			SDL_BlitSurface(buttonsurf2,NULL,screen,&c);
+			c.w=75;
+			c.h=100;
+			c.x+=75;
+			SDL_BlitSurface(buttonsurf3,NULL,screen,&c);
+			c.x+=75;
+			c.w=200;
+			c.h=50;
+			SDL_BlitSurface(buttonsurf4,NULL,screen,&c);
+			c.x+=200;
+			SDL_BlitSurface(buttonsurf5,NULL,screen,&c);
+			c.x+=200;
+			SDL_BlitSurface(buttonsurf6,NULL,screen,&c);
+			c.x=0;
+			c.y=50;
+			c.w=200;
+			c.h=50;
+			SDL_BlitSurface(buttonsurf7,NULL,screen,&c);
+			c.x=350;
+			SDL_BlitSurface(buttonsurf8,NULL,screen,&c);/*
         c.x+=120;
         c.w=80;
-        SDL_BlitSurface(ssss7,NULL,screen,&c);*/
+        SDL_BlitSurface(buttonsurf7,NULL,screen,&c);*/
 		}
 		if (clear==1){
 			SDL_FillRect(screen,NULL,SDL_MapRGB(screen->format, 255,255,255));
@@ -330,19 +343,41 @@ int main(int argc, char* argv[])
 						}else{
 							s=0;
 						}
-						itoa(s,savescreen,10);
+						sprintf(savescreen,"%d",s);
 						strcat(bmpname,savescreen);
 						strcat(bmpname,".png");
 						SDL_SavePNG(screen,bmpname);
 						memset(bmpname,0,99);
 					}
 					if (SDL_Button_mouse_down(button6,&Event)==1){
-						itoa(s,savescreen,10);
+						sprintf(savescreen,"%d",s);
 						strcat(bmpname,savescreen);
 						strcat(bmpname,".png");
 						buf=IMG_Load(bmpname);
 						SDL_BlitSurface(buf,NULL,screen,NULL);
 						memset(bmpname,0,99);
+					}
+					if (SDL_Button_mouse_down(button7,&Event)==1){
+						textrect.x=0;
+						textrect.y=100;
+						text_surface=TTF_RenderText_Solid(font,"Welcome to Drawbook. Press Up or Down to change line size",color99);
+						SDL_BlitSurface(text_surface,NULL,screen,&textrect);
+						textrect.y+=fontsize;
+						text_surface=TTF_RenderText_Solid(font,"Draw with the mouse, and try to find the",color99);
+						SDL_BlitSurface(text_surface,NULL,screen,&textrect);
+						text_surface=TTF_RenderText_Solid(font,"Hidden keyboard shortcuts!",color99);
+						textrect.y+=fontsize;
+						SDL_BlitSurface(text_surface,NULL,screen,&textrect);
+						text_surface=TTF_RenderText_Solid(font,"Press 2 and 3 to hide/show buttons",color99);
+						textrect.y+=fontsize;
+						SDL_BlitSurface(text_surface,NULL,screen,&textrect);
+						text_surface=TTF_RenderText_Solid(font,"More features COMING SOON...",color99);
+						textrect.y+=fontsize;
+						SDL_BlitSurface(text_surface,NULL,screen,&textrect);
+					}
+					if (SDL_Button_mouse_down(button8,&Event)==1){
+						if (word==0){word=1;}
+						else if (word==1){word=0;}
 					}
 				}
             }
@@ -429,7 +464,17 @@ int main(int argc, char* argv[])
 				c.x=0;
 				c.y=0;
 				c.h=50;
-				c.w=640;
+				c.w=950;
+				SDL_FillRect(screen,&c,SDL_MapRGB(screen->format,255,255,255));
+				c.x=200;
+				c.y=50;
+				c.h=50;
+				c.w=350;
+				SDL_FillRect(screen,&c,SDL_MapRGB(screen->format,255,255,255));
+				c.x=0;
+				c.y=50;
+				c.h=50;
+				c.w=200;
 				SDL_FillRect(screen,&c,SDL_MapRGB(screen->format,255,255,255));
 			}
 			if (word==1){
@@ -510,7 +555,7 @@ int main(int argc, char* argv[])
 			buffer2[buffindex+1]=0;
 			wordrect.h=fontsize;
 			wordrect.x=0;
-			wordrect.y=fontsize*line;
+			wordrect.y=50+(fontsize+8)*line;
 			wordrect.w=screenw;
 			SDL_FillRect(screen,&wordrect,SDL_MapRGB(screen->format,255,255,255));
 			text_surface=TTF_RenderText_Solid(font,buffer2,color99);
@@ -520,95 +565,10 @@ int main(int argc, char* argv[])
 			line++;
 			wordrect.y+=fontsize;
 			wordrect.x=0;
-			fprintf(textfile,"%s",buffer2);
 			for (buffindex=198;buffindex>0;buffindex--){
 				buffer2[buffindex]=0;
 			}
 			buffer2[0]=0;
-			break;
-		    case SDLK_a:;
-			if ((word==0)||(cntr==1)){
-			    if (s<99){
-			        s++;
-			    }else{
-			        s=0;
-			    }
-			    itoa(s,savescreen,10);
-			    strcat(bmpname,savescreen);
-			    strcat(bmpname,".bmp");
-			    SDL_SaveBMP(screen,bmpname);
-			    memset(bmpname,0,99);
-			}else{
-			    buffer2[buffindex]=getmod('a',Event.key.keysym.mod);
-			    buffindex++;
-			}
-			break;
-		    case SDLK_l:;
-			if ((word==0)||(cntr==1)){
-                itoa(s,savescreen,10);
-    		    strcat(bmpname,savescreen);
-			    strcat(bmpname,".bmp");
-			    buf=SDL_LoadBMP(bmpname);
-			    SDL_BlitSurface(buf,NULL,screen,NULL);
-                memset(bmpname,0,99);
-			}else{
-                /*itoa(s,savescreen,10);
-    		    strcat(bmpname,savescreen);
-			    strcat(bmpname,".bmp");
-			    buf=SDL_LoadBMP(bmpname);
-			    SDL_BlitSurface(buf,NULL,screen,NULL);*/
-			    buffer2[buffindex]=getmod('l',Event.key.keysym.mod);
-			    buffindex++;
-                memset(bmpname,0,99);
-			}
-			break;
-		    case SDLK_w:;
-			if ((word==0)||(cntr==1)){s++;}
-			else{
-			    buffer2[buffindex]=getmod('w',Event.key.keysym.mod);
-			    buffindex++;
-			}
-			break;
-		    case SDLK_s:;
-			if ((word==0)||(cntr==1)){s--;}
-			else{
-			    buffer2[buffindex]=getmod('s',Event.key.keysym.mod);
-			    buffindex++;
-			}
-			break;
-		    case SDLK_h:;
-			if ((word==0)||(cntr==1)){
-			    textrect.x=0;
-			    textrect.y=0;
-			    text_surface=TTF_RenderText_Solid(font,"Welcome to Drawbook. Press Up or Down to change line size",color99);
-			    SDL_BlitSurface(text_surface,NULL,screen,NULL);
-			    textrect.y+=fontsize;
-			    text_surface=TTF_RenderText_Solid(font,"Press W or S to change screenshot number, and A and L to",color99);
-			    SDL_BlitSurface(text_surface,NULL,screen,&textrect);
-			    text_surface=TTF_RenderText_Solid(font,"Save and load screenshots. Draw with the mouse",color99);
-			    textrect.y+=fontsize;
-			    SDL_BlitSurface(text_surface,NULL,screen,&textrect);
-			    text_surface=TTF_RenderText_Solid(font,"Press O to switch to word processor and escape to exit it",color99);
-				textrect.y+=fontsize;
-				SDL_BlitSurface(text_surface,NULL,screen,&textrect);
-				text_surface=TTF_RenderText_Solid(font,"Press 2 and 3 to hide/show buttons",color99);
-				textrect.y+=fontsize;
-				SDL_BlitSurface(text_surface,NULL,screen,&textrect);
-				text_surface=TTF_RenderText_Solid(font,"More features COMING SOON...",color99);
-				textrect.y+=fontsize;
-				SDL_BlitSurface(text_surface,NULL,screen,&textrect);
-			}else{
-			    buffer2[buffindex]=getmod('h',Event.key.keysym.mod);
-			    buffindex++;
-			}
-			break;
-		    case SDLK_o:;
-			if ((word==0)||(cntr==1)){
-			    word=1;
-			}else{
-			    buffer2[buffindex]=getmod('o',Event.key.keysym.mod);
-			    buffindex++;
-			}
 			break;
 		    default:;
 			if (word==1){
@@ -631,14 +591,22 @@ done:
     Pa_Terminate();*/
     SDL_FreeSurface(text_surface);
     SDL_FreeSurface(buf);
-	SDL_FreeSurface(ssss);
-	SDL_FreeSurface(ssss2);
-	SDL_FreeSurface(ssss3);
-	SDL_FreeSurface(ssss4);
+	SDL_FreeSurface(buttonsurf);
+	SDL_FreeSurface(buttonsurf2);
+	SDL_FreeSurface(buttonsurf3);
+	SDL_FreeSurface(buttonsurf4);
+	SDL_FreeSurface(buttonsurf5);
+	SDL_FreeSurface(buttonsurf6);
+	SDL_FreeSurface(buttonsurf7);
+	SDL_FreeSurface(buttonsurf8);
 	SDL_FreeSurface(button1->internal_surface);
 	SDL_FreeSurface(button2->internal_surface);
 	SDL_FreeSurface(button3->internal_surface);
 	SDL_FreeSurface(button4->internal_surface);
+	SDL_FreeSurface(button5->internal_surface);
+	SDL_FreeSurface(button6->internal_surface);
+	SDL_FreeSurface(button7->internal_surface);
+	SDL_FreeSurface(button8->internal_surface);
     SDL_Quit();
     TTF_Quit();
 	(void) argv;
