@@ -1,7 +1,7 @@
 CC=g++
 CFLAGS=-O3 -s 
 LDFLAGS= -lsfml-graphics -lsfml-window -lsfml-system -lm -L.
-SRC=drawbook.c
+SRC=drawbook2.cpp
 EXE=Drawbook_D
 AR=ar
 windows: $(EXE) drawbook
