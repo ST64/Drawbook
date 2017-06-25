@@ -22,6 +22,7 @@ DirText "Where will this install to?"
 Section "Core"
 SetOutPath $INSTDIR
 File Drawbook.exe
+SetOutPath $INSTDIR\\Data
 File Data\\Color.png
 File Data\\down.png
 File Data\\Load.png
@@ -34,15 +35,25 @@ File Data\\Drawbook.ttf
 WriteUninstaller $INSTDIR\Uninstall.exe
 SectionEnd
 
+Section "DLLs"
+SetOutPath $INSTDIR
+File libgcc_s_seh-1.dll
+File libstdc++-6.dll
+File libwinpthread-1.dll
+File sfml-graphics-2.dll
+File sfml-system-2.dll
+File sfml-window-2.dll
+SectionEnd
+
 Section "Copyright and Docs"
 SetOutPath "$EXEDIR\Documentation"
-File README.txt
+File README.md
 File COPYING.txt
 SectionEnd
 
 Section "Source code"
 SetOutPath "$EXEDIR\src"
-File src\\Makefile
+File Makefile
 File src\\drawbook.c
 SectionEnd
 
