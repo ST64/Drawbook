@@ -6,7 +6,7 @@
 #include <string>
 using namespace std;
 int drawing=0;
-double _x1,_y1,_x2,_y2;
+double _x1,this_y1,_x2,_y2;
 int width_rect=0;
 int height_rect=0;
 int _width_rect=0;
@@ -14,6 +14,7 @@ int _height_rect=0;
 int screenshot=0;
 int color=0;
 int textmode=0;
+int gamemode=0;
 char savescreen[65];
 char bmpname[100];
 string text_string;
@@ -27,14 +28,14 @@ sf::Sprite spritez;
 sf::Font font;
 sf::Text text;
 int main(){
-  sf::RenderWindow window(sf::VideoMode(1280,720),"Drawbook",sf::Style::Default);
+  sf::RenderWindow window(sf::VideoMode(800,600),"Drawbook",sf::Style::Default);
   sf::RenderWindow sideWindow(sf::VideoMode(200,400),"Tools",sf::Style::Close||sf::Style::Titlebar);
   sf::Event event;
   window.clear(sf::Color::White);
   sideWindow.clear(sf::Color::White);
   sf::Vector2i mousevect;
   sf::Vector2u windowvect;
-  _y1=0.0f;
+  this_y1=0.0f;
   _x1=0.0f;
   _x2=0.0f;
   _y2=0.0f;
@@ -68,9 +69,11 @@ int main(){
   int __y=0;
   int __w=0;
   int __h=0;
+  sideWindow.display();
   sideWindow.clear(sf::Color::White);
+  tempsprite.move(0,-350);
   for (int i=0;i<8;i++){
-    __x=x_rects[i];
+	__x=x_rects[i];
     __y=y_rects[i];
     __w=w_rects[i];
     __h=h_rects[i];
@@ -80,6 +83,20 @@ int main(){
     sprites[i]=tempsprite;
     sideWindow.draw(sprites[i]);
   }
+  sideWindow.display();
+  sideWindow.clear(sf::Color::White);
+  for (int i=0;i<8;i++){
+	__x=x_rects[i];
+    __y=y_rects[i];
+    __w=w_rects[i];
+    __h=h_rects[i];
+    tempsprite.setTexture(buttonsurfs[i]);
+    tempsprite.setTextureRect(sf::IntRect(0,0,__w,__h));
+    tempsprite.move(__x,__y);
+    sprites[i]=tempsprite;
+    sideWindow.draw(sprites[i]);
+  }
+  sideWindow.display();
   window.setPosition(sf::Vector2i(200,0));
   sideWindow.setPosition(sf::Vector2i(0,0));
   font.loadFromFile("Data\\Drawbook.ttf");
@@ -88,7 +105,16 @@ int main(){
   text.setCharacterSize(25);
   text.setColor(sf::Color::Black);
   window.draw(text);
+  window.setFramerateLimit(60);
   while (window.isOpen()&&sideWindow.isOpen()){
+	window.clear(sf::Color::White);
+	if (gamemode==1){
+		spritez.setTexture(texture);
+		window.draw(spritez);
+	}
+	if (gamemode==0){
+		window.draw(text);
+	}
     while (sideWindow.pollEvent(event)){
       if (event.type == sf::Event::Closed){
         sideWindow.close();
@@ -181,15 +207,15 @@ int main(){
       }
       if (event.type == sf::Event::MouseMoved){
         _x2=_x1;
-        _y2=_y1;
+        _y2=this_y1;
         _x1=event.mouseMove.x;
-        _y1=event.mouseMove.y;
+        this_y1=event.mouseMove.y;
         if (drawing==1){
           _width_rect = _x2-_x1+1;
-          _height_rect= _y2-_y1+1;
+          _height_rect= _y2-this_y1+1;
           sf::Vertex line[] =
           {
-            sf::Vertex(sf::Vector2f(_x1,_y1),sf::Color(r[color],g[color],b[color])),
+            sf::Vertex(sf::Vector2f(_x1,this_y1),sf::Color(r[color],g[color],b[color])),
             sf::Vertex(sf::Vector2f(_x2,_y2),sf::Color(r[color],g[color],b[color]))
           };
           window.draw(line,2,sf::Lines);
@@ -198,6 +224,7 @@ int main(){
       if (event.type==sf::Event::KeyPressed){
         if (event.key.code==sf::Keyboard::Escape){
           window.clear(sf::Color::White);
+		  gamemode = 1;
         }
         if (event.key.code==sf::Keyboard::BackSpace){
           if (textmode==1){
@@ -237,7 +264,9 @@ int main(){
         }
       }
     }
+	sf::Vector2u windowSize = window.getSize();
+	texture.create(windowSize.x, windowSize.y);
+    texture.update(window);
     window.display();
-    sideWindow.display();
   }
 }
