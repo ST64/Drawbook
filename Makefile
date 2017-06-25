@@ -9,8 +9,8 @@ windows: $(EXE) drawbook
 linux: Drawbook2_D
 	mv Drawbook2_D Drawbook
 	echo YAY!
-Drawbook2_D: $(SRC) libSDL_Button.a
-	$(CC) $(CFLAGS) $(LDFLAGS) $(SRC) -o Drawbook2_D -lSDLmain -lSDL -lSDL_ttf -lSDL_gfx -I/usr/include/ -I/usr/local/include -I. -L. -lSDL_Button -lSDL_image -lpng -lz -lSDL
+Drawbook2_D: $(SRC)
+	$(CC) $(CFLAGS) $(LDFLAGS) $(SRC) -o Drawbook2_D
 all: $(EXE) drawbook
 	echo YAY!
 $(EXE): $(SRC)
