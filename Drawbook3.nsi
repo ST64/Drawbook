@@ -22,20 +22,16 @@ DirText "Where will this install to?"
 Section "Core"
 SetOutPath $INSTDIR
 File Drawbook.exe
-File Color.png
-File down.png
-File Load.png
-File new.png
-File Save.png
-File text.png
-File text2.png
-File up.png
+File Data\\Color.png
+File Data\\down.png
+File Data\\Load.png
+File Data\\new.png
+File Data\\Save.png
+File Data\\text.png
+File Data\\text2.png
+File Data\\up.png
+File Data\\Drawbook.ttf
 WriteUninstaller $INSTDIR\Uninstall.exe
-SectionEnd
-
-Section "TTF Files"
-SetOutPath $INSTDIR\TTF
-File TTF\\Drawbook.ttf
 SectionEnd
 
 Section "Copyright and Docs"
@@ -48,14 +44,6 @@ Section "Source code"
 SetOutPath "$EXEDIR\src"
 File src\\Makefile
 File src\\drawbook.c
-File src\\SDL_Button.c
-File src\\SDL_Button.h
-File libSDL_Button.a
-File src\\SDL_colorpick.c
-File src\\SDL_colorpick.h
-File src\\savepng.c
-File src\\savepng.h
-File text_editor_2.cpp
 SectionEnd
 
 Section "Uninstall"
