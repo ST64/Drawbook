@@ -1,0 +1,7 @@
+V0.7:
+Changed engine to SFML from SDL 1.2 to enable opengl acceleration.
+Added 2 windows.
+V0.6:
+Added button textures instead of using text.
+V0.5:
+Added buttons as text on coloured background.

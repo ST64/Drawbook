@@ -43,21 +43,21 @@ int main(){
   sf::Texture uptexture;
   sf::Texture downtexture;
 //  sf::Texture temptexture;
-  buttonsurfs[0].loadFromFile("Data\\new.png");
+  buttonsurfs[0].loadFromFile("Data/new.png");
 //  buttonsurfs[0]=temptexture;
-  buttonsurfs[1].loadFromFile("Data\\up.png");
+  buttonsurfs[1].loadFromFile("Data/up.png");
 //  buttonsurfs[1]=temptexture;
-  buttonsurfs[2].loadFromFile("Data\\down.png");
+  buttonsurfs[2].loadFromFile("Data/down.png");
 //  buttonsurfs[2]=temptexture;
-  buttonsurfs[3].loadFromFile("Data\\Color.png");
+  buttonsurfs[3].loadFromFile("Data/Color.png");
 //  buttonsurfs[3]=temptexture;
-  buttonsurfs[4].loadFromFile("Data\\Save.png");
+  buttonsurfs[4].loadFromFile("Data/Save.png");
 //  buttonsurfs[4]=temptexture;
-  buttonsurfs[5].loadFromFile("Data\\Load.png");
+  buttonsurfs[5].loadFromFile("Data/Load.png");
 //  buttonsurfs[5]=temptexture;
-  buttonsurfs[6].loadFromFile("Data\\text.png");
+  buttonsurfs[6].loadFromFile("Data/text.png");
 //  buttonsurfs[6]=temptexture;
-  buttonsurfs[7].loadFromFile("Data\\text2.png");
+  buttonsurfs[7].loadFromFile("Data/text2.png");
 //  buttonsurfs[7]=temptexture;
   sf::Sprite sprites[9];
   sf::Sprite tempsprite;
@@ -99,7 +99,7 @@ int main(){
   sideWindow.display();
   window.setPosition(sf::Vector2i(200,0));
   sideWindow.setPosition(sf::Vector2i(0,0));
-  font.loadFromFile("Data\\Drawbook.ttf");
+  font.loadFromFile("Data/Drawbook.ttf");
   text.setFont(font);
   text.setString("Welcome to Drawbook.\nPress the Up or Down button to change line size.\nDraw with the mouse.\nPress ESC to Continue");
   text.setCharacterSize(25);
@@ -172,14 +172,14 @@ int main(){
             texture.create(windowSize.x, windowSize.y);
             texture.update(window);
             Image_screenshot = texture.copyToImage();
-            Image_screenshot.saveToFile("Data\\saves.png");
+            Image_screenshot.saveToFile("Data/saves.png");
           }else{
             textmode=0;
             sf::Vector2u windowSize = window.getSize();
             texture.create(windowSize.x, windowSize.y);
             texture.update(window);
             Image_screenshot = texture.copyToImage();
-            Image_screenshot.saveToFile("Data\\saves.png");
+            Image_screenshot.saveToFile("Data/saves.png");
           }
         }
       }
@@ -229,7 +229,7 @@ int main(){
         if (event.key.code==sf::Keyboard::BackSpace){
           if (textmode==1){
             text_string.pop_back();
-            Image_screenshot.loadFromFile("Data\\saves.png");
+            Image_screenshot.loadFromFile("Data/saves.png");
             texture.loadFromImage(Image_screenshot);
             spritez.setTexture(texture);
             window.draw(spritez);
