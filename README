@@ -1,17 +1,11 @@
 Drawbook: A simple drawing program for animators
 This program is linked dynamically with:
 
-libSDL version 1.2.15, which is covered by the LGPL license version 2.1,
-libSDL_ttf version 2.0.11, which is covered by the LGPL license version 2.1, and
-libSDL_gfx version 2.0.25, which is covered by the LGPL license version 2.1.
-
-The source code and the binary form of these libraries are provided.
+SFML version 2.4.2
 
 This program is also made with the MinGW gcc compiler.
 
-This program is covered by the LGPL license version 2.1
-This program was written by ST64, and libSDL, libSDL_ttf, and libSDL_gfx
-have different authors, which each have AUTHORS files.
+This program is covered by the zlib/png license, and was written by ST64
 
 Installation:
 
@@ -20,17 +14,15 @@ One is to run the NSIS installer,
 and the other is to run
 ./autogen.sh && ./configure && make && make install
 
-Licensing:
-Read COPYING
-
 Documentation:
 
 Use the mouse to draw, the up and down arrows to change line size,
-the left and right arrows to choose between many colours,
-o to change to text mode
+the left and right arrows to choose between many colours, and
+o to change to text mode.
+
+The following commands are keyboard shortcuts which may be used in place of the on-screen buttons:
 ESCAPE to exit text mode or clear the screen
 0 to quit
 a and l to store and load screenshots, respectively
 w and s to change screenshot number,
-2 and 3 to hide/show buttons (Press ESCAPE after pressing 2),
 h for help
