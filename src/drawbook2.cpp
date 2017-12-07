@@ -34,6 +34,7 @@ int main(){
 	window.clear(sf::Color::White);
 	sideWindow.clear(sf::Color::White);
 	vector<sf::VertexArray> drawable_verts;
+	drawable_verts.push_back(sf::VertexArray());
 	sf::Vector2i mousevect;
 	sf::Vector2u windowvect;
 	this_y1=0.0f;
