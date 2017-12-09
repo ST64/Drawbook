@@ -9,13 +9,12 @@
 using namespace std;
 double _x1,this_y1,_x2,_y2;
 int width_rect=0, height_rect=0, _width_rect=0, _height_rect=0, screenshot=0, color=0, textmode=0, gamemode=0, drawing=0;
+//enum mode_flags { GAMEMODE=1, DRAWING=2, TEXTMODE=4};
+// Flags for mode of operation
 char savescreen[65];
 char bmpname[100];
 int f=0;
 string text_string;
-const int r[]={0,255,255,0,0,128, 255}; /* black, red, yellow, green 3, deepskyblue, gray, white*/
-const int g[]={0,0,255,205,199,128,255};
-const int b[]={0,0,0,0,255,128,255};
 const char charslist[]={' ','!','"','#','$','%','&','\'','(',')','*','+',',','-','.'};
 sf::Image Image_screenshot;
 sf::Texture texture;
@@ -27,6 +26,8 @@ const int x_rects[9]={0,0,100,0,0,0,0,0,0};
 const int y_rects[9]={0,50,50,150,200,250,300,350,350};
 const int w_rects[9]={200,75,75,200,200,200,200,200,0};
 const int h_rects[9]={50,100,100,50,50,50,50,50,0};
+const sf::Color rgb[]={sf::Color::Black,sf::Color::Red,sf::Color::Yellow,sf::Color::Green,sf::Color::Blue};
+/* black, red, yellow, green, blue*/
 int main(){
 	sf::RenderWindow window(sf::VideoMode(800,600),"Drawbook",sf::Style::Default);
 	sf::RenderWindow sideWindow(sf::VideoMode(200,400),"Tools",sf::Style::Close|sf::Style::Titlebar);
@@ -84,6 +85,9 @@ int main(){
 				mousevect = sf::Mouse::getPosition(sideWindow);
 				if (mousevect.y < 50){
 					window.clear(sf::Color::White);
+					drawable_verts.clear();
+					drawable_verts.push_back(sf::VertexArray());
+					f=0;
 					gamemode = 1;
 				}else if ((mousevect.y > 50)&&(mousevect.y < 150)&&(mousevect.x < 100)){
 					screenshot++;
@@ -91,7 +95,7 @@ int main(){
 					screenshot--;
 				}else if ((mousevect.y > 150)&&(mousevect.y < 200)){
 					color++;
-					if (color > 8){color=0;}
+					if (color > 5){color=0;}
 				}else if ((mousevect.y > 200)&&(mousevect.y < 250)){
 					screenshot++;
 					sf::Vector2u windowSize = window.getSize();
@@ -148,8 +152,8 @@ int main(){
 				}else if ((mousevect.x > windowvect.x)||(mousevect.y > windowvect.y)){
 					drawing=0;
 				}else{
-					drawable_verts[f].append(sf::Vertex(sf::Vector2f(mousevect),sf::Color(r[color],g[color],b[color])));
-					drawable_verts[f].append(sf::Vertex(sf::Vector2f(mousevect),sf::Color(r[color],g[color],b[color])));
+					drawable_verts[f].append(sf::Vertex(sf::Vector2f(mousevect),rgb[color]));
+					drawable_verts[f].append(sf::Vertex(sf::Vector2f(mousevect),rgb[color]));
 				}
 			}else if (event.type == sf::Event::MouseButtonReleased){
 				drawing=0;
@@ -164,7 +168,7 @@ int main(){
 				this_y1=event.mouseMove.y;
 				if (drawing==1){
 					if ((_x2 != _x1) || (_y2 != this_y1)){
-						drawable_verts[f].append(sf::Vertex(sf::Vector2f(_x1,this_y1),sf::Color(r[color],g[color],b[color])));
+						drawable_verts[f].append(sf::Vertex(sf::Vector2f(_x1,this_y1),rgb[color]));
 					}
 				}
 			}else if (event.type==sf::Event::KeyPressed){
