@@ -42,17 +42,15 @@ int main(){
 	_x1=0.0f;
 	_x2=0.0f;
 	_y2=0.0f;
-	sf::Texture buttonsurfs[9];
-	sf::Sprite sprites[9];
+	sf::Texture buttonsurfs;
+	sf::Sprite sprites;
 	sideWindow.display();
 	sideWindow.clear(sf::Color::White);
-	for (int i=0;i<8;i++){
-		buttonsurfs[i].loadFromFile(buttonfiles[i]);
-		sprites[i].setTexture(buttonsurfs[i]);
-		sprites[i].setTextureRect(sf::IntRect(0,0,w_rects[i],h_rects[i]));
-		sprites[i].setPosition(x_rects[i],y_rects[i]);
-		sideWindow.draw(sprites[i]);
-	}
+	buttonsurfs.loadFromFile("Data/sidewindow.png");
+	sprites.setTexture(buttonsurfs);
+	sprites.setTextureRect(sf::IntRect(0,0,200,400));
+	sprites.setPosition(0,0);
+	sideWindow.draw(sprites);
 	sideWindow.display();
 	window.setPosition(sf::Vector2i(200,0));
 	sideWindow.setPosition(sf::Vector2i(0,0));
@@ -61,15 +59,10 @@ int main(){
 	text.setFillColor(sf::Color::Black);
 	window.draw(text);
 	window.setFramerateLimit(60);
-	for (int i=0;i<8;i++){
-		sprites[i].setPosition(x_rects[i],y_rects[i]);
-	}
 	while (window.isOpen()&&sideWindow.isOpen()){
 		sideWindow.clear(sf::Color::White);
 		window.clear(sf::Color::White);
-		for (int i=0;i<8;i++){
-			sideWindow.draw(sprites[i]);
-		}
+		sideWindow.draw(sprites);
 		if (gamemode==1){
 			spritez.setTexture(texture);
 			window.draw(spritez);
