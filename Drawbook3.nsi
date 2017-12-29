@@ -23,14 +23,6 @@ Section "Core"
 SetOutPath $INSTDIR
 File Drawbook.exe
 SetOutPath $INSTDIR\\Data
-File Data\\Color.png
-File Data\\down.png
-File Data\\Load.png
-File Data\\new.png
-File Data\\Save.png
-File Data\\text.png
-File Data\\text2.png
-File Data\\up.png
 File Data\\Drawbook.ttf
 WriteUninstaller $INSTDIR\Uninstall.exe
 SectionEnd
@@ -53,8 +45,7 @@ SectionEnd
 
 Section "Source code"
 SetOutPath "$EXEDIR\src"
-File Makefile
-File src\\drawbook.c
+File src.tar.gz
 SectionEnd
 
 Section "Uninstall"
