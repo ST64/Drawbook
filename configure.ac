@@ -5,7 +5,7 @@ AC_CONFIG_SRCDIR([src/drawbook2.cpp])
 AC_CONFIG_HEADERS([config.h])
 
 if test -z $CXXFLAGS; then
-	CXXFLAGS='-O2 -Wall -Wextra -Wshadow'
+	CXXFLAGS='-O2 -flto -Wall -Wextra -Wshadow'
 fi
 AC_PROG_CXX
 AC_PROG_CC
