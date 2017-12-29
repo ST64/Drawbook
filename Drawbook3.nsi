@@ -31,7 +31,6 @@ Section "DLLs"
 SetOutPath $INSTDIR
 File libgcc_s_seh-1.dll
 File libstdc++-6.dll
-File libwinpthread-1.dll
 File sfml-graphics-2.dll
 File sfml-system-2.dll
 File sfml-window-2.dll
