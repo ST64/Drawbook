@@ -5,17 +5,28 @@
 #include <cstring>
 #include <iostream>
 #include <vector>
+#include <sstream>
 #include <utility>
+#include "simple_svg_1.0.0.hpp"
+using namespace svg;
 double _x1,this_y1,_x2,_y2;
-int width_rect=0, height_rect=0, _width_rect=0, _height_rect=0, screenshot=0, color=0, textmode=0, gamemode=0, drawing=0;
-char savescreen[65];
-char bmpname[100];
+int width_rect=0, height_rect=0, _width_rect=0, _height_rect=0, screenshot=0, color=0, textmode=0, drawing=0;
+char bmpname[16];
 int f=0;
 std::string text_string;
 const char charslist[]={' ','!','"','#','$','%','&','\'','(',')','*','+',',','-','.'};
 const sf::Color rgb[]={sf::Color::Black,sf::Color::Red,sf::Color::Yellow,sf::Color::Green,sf::Color::Blue};
 const std::string buttonstrs[] = {"New File","Next Color","Save File","Load File","Help","Text Mode"};
 /* black, red, yellow, green, blue*/
+std::string trim(std::string const& str){
+    if(str.empty())
+        return str;
+
+    std::size_t firstScan = str.find_first_not_of('\t');
+    std::size_t first     = firstScan == std::string::npos ? str.length() : firstScan;
+    std::size_t last      = str.find_last_not_of(' ');
+    return str.substr(first, last-first+1);
+}
 int main(){
 	sf::RenderWindow window(sf::VideoMode(800,600),"Drawbook",sf::Style::Default);
 	sf::RenderWindow sideWindow(sf::VideoMode(200,300),"Tools",sf::Style::Close|sf::Style::Titlebar);
@@ -31,9 +42,6 @@ int main(){
 	_x1=0.0f;
 	_x2=0.0f;
 	_y2=0.0f;
-	sf::Texture texture;
-	sf::Sprite spritez;
-	sf::Image Image_screenshot;
 	sf::Font font;
 	font.loadFromFile("Data/Drawbook.ttf");
 	sf::Text text;
@@ -55,12 +63,7 @@ int main(){
 	text = sf::Text("Welcome to Drawbook.\nPress the Up or Down button to change line size.\nDraw with the mouse.\nPress ESC to Continue",font,25);
 	text.setFillColor(sf::Color::Black);
 	window.draw(text);
-	window.setFramerateLimit(60);
-	texture.create(windowvect.x, windowvect.y);
 	window.clear(sf::Color::White);
-	texture.update(window);
-	sf::Sprite TexSprite;
-	TexSprite.setTexture(texture);
 	while (window.isOpen()&&sideWindow.isOpen()){
 		sideWindow.clear(sf::Color::Black);
 		for (int i=0;i<6;i++){
@@ -68,9 +71,18 @@ int main(){
 			sideWindow.draw(buttontexts[i]);
 		}
 		window.clear(sf::Color::White);
-		window.draw(TexSprite);
-		if (gamemode==0){
-			window.draw(text);
+		window.draw(text);
+		if (drawable_verts.size()>0){
+			for (uint64_t i=0;i<drawable_verts.size();i++){
+				if (drawable_verts[i].first.size()>1){
+					tmpverts.reserve(drawable_verts[i].first.size());
+					for (uint32_t j=1;j<drawable_verts[i].first.size();j++){
+						tmpverts.emplace_back(sf::Vertex(sf::Vector2f(drawable_verts[i].first[j].x,drawable_verts[i].first[j].y),drawable_verts[i].second));
+					}
+					window.draw(tmpverts.data(),tmpverts.size(),sf::LineStrip);
+					std::vector<sf::Vertex>().swap(tmpverts);
+				}
+			}
 		}
 		while (sideWindow.pollEvent(event)){
 			if (event.type == sf::Event::Closed){
@@ -84,38 +96,95 @@ int main(){
 					drawable_verts.clear();
 					drawable_verts.shrink_to_fit();
 					drawable_verts.emplace_back();
+					text.setString("");
 					f=0;
-					gamemode = 1;
 				}else if (mousevect.y < 100){
 					color++;
 					if (color > 5){color=0;}
 				}else if (mousevect.y < 150){
 					screenshot++;
-					texture.update(window);
-					Image_screenshot = texture.copyToImage();
-					sprintf(bmpname,"Screenshot%d.png",screenshot);
-					Image_screenshot.saveToFile(bmpname);
-					memset(bmpname,0,99);
+					Dimensions dimensions(windowvect.x,windowvect.y);
+					sprintf(bmpname,"Screenshot%d.svg",screenshot);
+					Document doc(bmpname,Layout(dimensions,Layout::TopLeft));
+					int64_t o = static_cast<int64_t>(drawable_verts.size());
+					for (int64_t i=0;i<o;i++){
+						int32_t k = static_cast<int32_t>(drawable_verts[i].first.size());
+						Polyline polyline_a(Stroke(1,Color(drawable_verts[i].second.r,drawable_verts[i].second.g,drawable_verts[i].second.b)));
+						for (int32_t j=0;j<k;j++){
+							polyline_a << Point(drawable_verts[i].first[j].x,drawable_verts[i].first[j].y);
+						}
+						if (drawable_verts[i].first.size() != 0){
+							doc << polyline_a;
+						}
+					}
+					std::stringstream iss(text_string);
+					int32_t ind = 25;
+					while (iss.good()){
+						std::string SingleLine;
+						getline(iss,SingleLine,'\n');
+						doc << Text(Point(0,ind),SingleLine,Color::Black,Font(25,"Verdana"));
+						ind += 40;
+					}
+					doc.save();
+					memset(bmpname,0,15);
 				}else if (mousevect.y < 200){
-					sprintf(bmpname,"Screenshot%d.png",screenshot);
-					texture.loadFromFile(bmpname);
-					memset(bmpname,0,99);
+					sprintf(bmpname,"Screenshot%d.svg",screenshot);
+					std::ifstream ifs(bmpname);
+					text_string = "";
+					drawable_verts.clear();
+					drawable_verts.shrink_to_fit();
+					drawable_verts.emplace_back();
+					f=0;
+					while (ifs.good()){
+						std::string SingleLine;
+						getline(ifs,SingleLine,'\n');
+						if (SingleLine[2] == 't'){
+							SingleLine = trim(SingleLine);
+							SingleLine.erase(SingleLine.length()-7);
+							SingleLine.erase(0,SingleLine.rfind('>')+1);
+							text_string = text_string + SingleLine + "\n";
+							text.setString(text_string);
+							text.setPosition(0,0);
+						}else if (SingleLine[2] == 'p'){
+							SingleLine.erase(0,SingleLine.find("points=\""));
+							std::stringstream SL(SingleLine);
+							while (SL.good()){
+								std::string SinglePoint;
+								SL >> SinglePoint;
+								sf::Vector2i tmp;
+								sscanf(SinglePoint.c_str(),"%i,%i ",&tmp.x,&tmp.y);
+								if ((tmp.x!=0)||(tmp.y!=0)){
+									drawable_verts[f].first.emplace_back(tmp);
+								}
+							}
+							SingleLine.erase(0,SingleLine.find("stroke=\"rgb("));
+							int r=0,g=0,b=0;
+							sscanf(SingleLine.c_str(),"%i,%i,%i",&r,&g,&b);
+							drawable_verts[f].second = sf::Color(r,g,b);
+							f++;
+							drawable_verts.emplace_back();
+						}
+					}
+					memset(bmpname,0,15);
 				}else if (mousevect.y < 250){
-					gamemode = 0;
+					text.setString("Welcome to Drawbook.\nPress the Up or Down button to change line size.\nDraw with the mouse.\nPress ESC to Continue. \nIf you appear to have lost text,\npress the text mode button again.");
 				}else{
 					textmode = textmode ^ 0x01;
+					if (textmode == 0){
+						text.setString("");
+					}
 					window.clear(sf::Color::White);
 				}
 			}
 		}
 		while (window.pollEvent(event)){
+			mousevect = sf::Mouse::getPosition(window);
 			if (event.type == sf::Event::Closed){
 				window.close();
 				sideWindow.close();
 			}else if (event.type == sf::Event::MouseButtonPressed){
-				mousevect = sf::Mouse::getPosition(window);
 				windowvect= window.getSize();
-				drawing=1 & static_cast<int>(mousevect.x > 0) & static_cast<int>(mousevect.y > 0) & static_cast<int>(mousevect.x < windowvect.x) & static_cast<int>(mousevect.y < windowvect.y);
+				drawing=1 & (static_cast<int>(mousevect.x) > 0) & (static_cast<int>(mousevect.y) > 0) & (mousevect.x < static_cast<int>(windowvect.x)) & (mousevect.y < static_cast<int>(windowvect.y));
 				if (drawing == 1){
 					drawable_verts[f].first.emplace_back(mousevect);
 					drawable_verts[f].first.emplace_back(mousevect);
@@ -123,7 +192,6 @@ int main(){
 				drawable_verts[f].second = rgb[color];
 			}else if (event.type == sf::Event::MouseButtonReleased){
 				drawing=0;
-				mousevect = sf::Mouse::getPosition(window);
 				drawable_verts[f].first.emplace_back(mousevect);
 				drawable_verts[f].first.shrink_to_fit();
 				drawable_verts[f].second = rgb[color];
@@ -145,16 +213,14 @@ int main(){
 					window.clear(sf::Color::White);
 					drawable_verts.clear();
 					drawable_verts.emplace_back();
+					text_string = "";
+					text.setString(text_string);
 					f=0;
-					gamemode = 1;
 				}else if (event.key.code==sf::Keyboard::BackSpace){
 					if (textmode==1){
-						Image_screenshot.loadFromFile("Data/saves.png");
-						texture.loadFromImage(Image_screenshot);
-						spritez.setTexture(texture);
-						window.draw(spritez);
-						text = sf::Text(text_string,font,25);
-						text.setFillColor(sf::Color::Black);
+						window.clear(sf::Color::White);
+						text_string.pop_back();
+						text.setString(text_string);
 						window.draw(text);
 					}
 				}
@@ -163,31 +229,15 @@ int main(){
 					if ((event.text.unicode == 10)||(event.text.unicode == 13)){
 						char rs = '\n';
 						text_string.push_back(rs);
-						text=sf::Text(text_string,font,25);
-						text.setFillColor(sf::Color::Black);
-						window.draw(text);
+						text.setString(text_string);
 					}else if ((event.text.unicode < 128)&&(event.text.unicode > 31)){
-						auto rs = static_cast<char>(event.text.unicode);
+						char rs = static_cast<char>(event.text.unicode);
 						if (event.text.unicode < 48){
 							rs = charslist[event.text.unicode-32];
 						}
 						text_string.push_back(rs);
-						text=sf::Text(text_string,font,25);
-						text.setFillColor(sf::Color::Black);
-						window.draw(text);
+						text.setString(text_string);
 					}
-				}
-			}
-		}
-		if (drawable_verts.size()>1){
-			for (uint64_t i=1;i<drawable_verts.size();i++){
-				if (drawable_verts[i].first.size()>1){
-					tmpverts.reserve(drawable_verts[i].first.size());
-					for (uint32_t j=1;j<drawable_verts[i].first.size();j++){
-						tmpverts.emplace_back(sf::Vertex(sf::Vector2f(drawable_verts[i].first[j].x,drawable_verts[i].first[j].y),drawable_verts[i].second));
-					}
-					window.draw(tmpverts.data(),tmpverts.size(),sf::LineStrip);
-					std::vector<sf::Vertex>().swap(tmpverts);
 				}
 			}
 		}
