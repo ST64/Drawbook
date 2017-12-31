@@ -3,6 +3,7 @@ This program is linked dynamically with:
 
 SFML version 2.4.2
 
+This program also uses simple-svg for the screenshot function.
 Provided binaries are compiled with the MinGW gcc compiler.
 
 This program is covered by the zlib/png license, and was written by ST64
