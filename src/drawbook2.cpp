@@ -1,17 +1,7 @@
-#include <SFML/Graphics.hpp>
-#include <cmath>
-#include <cstdint>
-#include <cstdlib>
-#include <cstring>
-#include <iostream>
-#include <vector>
-#include <sstream>
-#include <utility>
-#include "simple_svg_1.0.0.hpp"
+#include "sf_button.hpp"
 using namespace svg;
 double _x1,this_y1,_x2,_y2;
 int width_rect=0, height_rect=0, _width_rect=0, _height_rect=0, screenshot=0, color=0, textmode=0, drawing=0;
-char bmpname[16];
 int f=0;
 sf::Font font;
 std::string text_string;
@@ -19,14 +9,19 @@ const char charslist[]={' ','!','"','#','$','%','&','\'','(',')','*','+',',','-'
 const sf::Color rgb[]={sf::Color::Black,sf::Color::Red,sf::Color::Yellow,sf::Color::Green,sf::Color::Blue};
 const std::string buttonstrs[] = {"New File","Next Color","Save File","Load File","Help","Text Mode"};
 /* black, red, yellow, green, blue*/
-std::string trim(std::string const& str){
-    if(str.empty())
-        return str;
-
-    std::size_t firstScan = str.find_first_not_of('\t');
-    std::size_t first     = firstScan == std::string::npos ? str.length() : firstScan;
-    std::size_t last      = str.find_last_not_of(' ');
-    return str.substr(first, last-first+1);
+sf::Clock global_timer;
+std::string tmp_st;
+void blink_cursor(double interval, sf::Text *_text){
+	if (global_timer.getElapsedTime() >= sf::seconds(interval)){
+		tmp_st = std::string(_text->getString());
+		if (tmp_st.back() == '_'){
+			tmp_st.pop_back();
+			_text->setString(tmp_st);
+		}else{
+			_text->setString(tmp_st + '_');
+		}
+		global_timer.restart();
+	}
 }
 std::string dialog(std::string dialogtitle,std::string dialogdata){
 	sf::RenderWindow dialogWindow(sf::VideoMode(800,100),dialogtitle,sf::Style::Close|sf::Style::Titlebar);
@@ -36,22 +31,12 @@ std::string dialog(std::string dialogtitle,std::string dialogdata){
 	dialogWindow.setPosition(sf::Vector2i(200,0));
 	sf::Event dialogEvent;
 	std::string retstr;
-	sf::Clock dialogTimer;
 	dialogtext.setFillColor(sf::Color::Black);
 	while (dialogWindow.isOpen()){
-		dialogtext.setString(dialogdata + retstr);
-		if (dialogTimer.getElapsedTime() >= sf::seconds(0.5f)){
-			if (std::string(dialogtext.getString()).back() == '_'){
-				dialogtext.setString(dialogdata+retstr);
-			}else{
-				dialogtext.setString(dialogdata+retstr+'_');
-			}
-			dialogTimer.restart();
-		}
+		blink_cursor(0.5f,&dialogtext);
 		dialogWindow.clear(sf::Color::White);
 		dialogWindow.draw(dialogtext);
 		while (dialogWindow.pollEvent(dialogEvent)){
-			dialogWindow.draw(dialogtext);
 			if (dialogEvent.type==sf::Event::Closed){
 				dialogWindow.close();
 				return retstr;
@@ -88,16 +73,10 @@ int main(){
 	_y2=0.0f;
 	font.loadFromFile("Data/Drawbook.ttf");
 	sf::Text text;
-	sf::Text buttontexts[6];
-	sf::RectangleShape buttonrects[6];
+	sf_Button buttons[6];
 	sf::Clock timer;
 	for (int i=0;i<6;i++){
-		buttontexts[i] = sf::Text(buttonstrs[i],font,25);
-		buttontexts[i].setPosition(10,5+(50*i));
-		buttontexts[i].setFillColor(sf::Color::Black);
-		buttonrects[i].setSize(sf::Vector2f(190,40));
-		buttonrects[i].setPosition(5,5+(i*50));
-		buttonrects[i].setFillColor(sf::Color(0xff,0x63,0));
+		buttons[i] = sf_Button(sf::Vector2f(0,i*50),sf::Vector2f(200,50),sf::Color(0xff,0x63,0),&font,buttonstrs[i]);
 	}
 	sideWindow.display();
 	sideWindow.clear(sf::Color::White);
@@ -109,26 +88,18 @@ int main(){
 	window.draw(text);
 	window.clear(sf::Color::White);
 	while (window.isOpen()&&sideWindow.isOpen()){
-		if ((timer.getElapsedTime() >= sf::seconds(0.5f))&&(textmode==1)){
-			if (std::string(text.getString()).back()=='_'){
-				text.setString(text_string);
-			}else{
-				text.setString(text_string+'_');
-			}
-			timer.restart();
-		}
+		if (textmode==1){blink_cursor(0.5f,&text);}
 		sideWindow.clear(sf::Color::Black);
 		for (int i=0;i<6;i++){
-			sideWindow.draw(buttonrects[i]);
-			sideWindow.draw(buttontexts[i]);
+			buttons[i].draw(&sideWindow);
 		}
 		window.clear(sf::Color::White);
 		window.draw(text);
 		if (drawable_verts.size()>0){
-			for (uint64_t i=0;i<drawable_verts.size();i++){
+			for (int64_t i=0;i<static_cast<int64_t>(drawable_verts.size());i++){
 				if (drawable_verts[i].first.size()>1){
 					tmpverts.reserve(drawable_verts[i].first.size());
-					for (uint32_t j=1;j<drawable_verts[i].first.size();j++){
+					for (int32_t j=1;j<static_cast<int32_t>(drawable_verts[i].first.size());j++){
 						tmpverts.emplace_back(sf::Vertex(sf::Vector2f(drawable_verts[i].first[j].x,drawable_verts[i].first[j].y),drawable_verts[i].second));
 					}
 					window.draw(tmpverts.data(),tmpverts.size(),sf::LineStrip);
@@ -179,7 +150,6 @@ int main(){
 						ind += 40;
 					}
 					doc.save();
-					memset(bmpname,0,15);
 				}else if (mousevect.y < 200){
 					std::string svgname = dialog("Load File","Load what file?");
 					std::ifstream ifs(svgname.c_str());
@@ -192,7 +162,9 @@ int main(){
 						std::string SingleLine;
 						getline(ifs,SingleLine,'\n');
 						if (SingleLine[2] == 't'){
-							SingleLine = trim(SingleLine);
+							if (SingleLine[0]=='\t'){
+								SingleLine.erase(0,1);
+							}
 							SingleLine.erase(SingleLine.length()-7);
 							SingleLine.erase(0,SingleLine.rfind('>')+1);
 							text_string = text_string + SingleLine + "\n";
@@ -218,7 +190,6 @@ int main(){
 							drawable_verts.emplace_back();
 						}
 					}
-					memset(bmpname,0,15);
 				}else if (mousevect.y < 250){
 					text.setString("Welcome to Drawbook.\nPress the Up or Down button to change line size.\nDraw with the mouse.\nPress ESC to Continue. \nIf you appear to have lost text,\npress the text mode button again.");
 				}else{
