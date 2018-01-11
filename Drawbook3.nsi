@@ -1,5 +1,5 @@
 Name "Drawbook"
-OutFile "Drawbook_Setup_V0.6.1.exe"
+OutFile "Drawbook_Setup_V1.0.1.exe"
 
 !include "Sections.nsh"
 !include "MUI.nsh"

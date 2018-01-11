@@ -7,7 +7,7 @@ sf_Button::sf_Button(sf::Vector2f pos, sf::Vector2f size, sf::Color c, sf::Font 
 	col = c;
 	text_ = sf::Text(s, *t, 25);
 	text_.setFillColor(sf::Color::Black);
-	text_.setPosition(pos);
+	text_.setPosition(sf::Vector2f(pos.x+5,pos.y+5));
 }
 void sf_Button::setSize(sf::Vector2f size){
 	b_size = size;

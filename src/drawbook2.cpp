@@ -1,4 +1,5 @@
 #include "sf_button.hpp"
+#include <cmath>
 using namespace svg;
 double _x1,this_y1,_x2,_y2;
 int width_rect=0, height_rect=0, _width_rect=0, _height_rect=0, screenshot=0, color=0, textmode=0, drawing=0;
@@ -6,11 +7,96 @@ int f=0;
 sf::Font font;
 std::string text_string;
 const char charslist[]={' ','!','"','#','$','%','&','\'','(',')','*','+',',','-','.'};
-const sf::Color rgb[]={sf::Color::Black,sf::Color::Red,sf::Color::Yellow,sf::Color::Green,sf::Color::Blue};
-const std::string buttonstrs[] = {"New File","Next Color","Save File","Load File","Help","Text Mode"};
-/* black, red, yellow, green, blue*/
+const std::string buttonstrs[] = {"New File","Pick Color","Save File","Load File","Help","Text Mode"};
 sf::Clock global_timer;
 std::string tmp_st;
+sf::Color rgb(0,0,0);
+void color_wheel(sf::RenderWindow *rwind,sf::RenderWindow *swind, sf::Font *fo){
+	rwind->clear(sf::Color::White);
+	sf::VertexArray colorwheel(sf::TriangleFan, 256);
+	sf::Vector2u rw = rwind->getSize();
+	int k = rw.x;
+	if (rw.y < k){
+		k = rw.y;
+	}
+	float k2 = (static_cast<float>(k)) * 0.4f;
+	rw.x = rw.x >> 1;
+	rw.y = rw.y >> 1;
+	for (int i=0;i<256;i++){
+		float vh = static_cast<float>(i) * 0.023438f;
+		float vi = floor(vh);
+		float v3 = vh - vi;
+		sf::Color c;
+		if (vi == 0){
+			c.r = 255;
+			c.g = 255.0f*v3;
+			c.b = 0;
+		}else if (vi == 1){
+			c.r = 255.0f*(1.0f - v3);
+			c.g = 255;
+			c.b = 0;
+		}else if (vi == 2){
+			c.r = 0;
+			c.g = 255;
+			c.b = 255.0f*v3;
+		}else if (vi == 3){
+			c.r = 0;
+			c.g = 255.0f*(1.0f - v3);
+			c.b = 255;
+		}else if (vi == 4){
+			c.r = 255.0f*v3;
+			c.g = 0;
+			c.b = 255;
+		}else{
+			c.r = 255;
+			c.g = 0;
+			c.b = 255.0f*(1.0f - v3);
+		}
+		colorwheel[i].position = sf::Vector2f(rw.x + (k2 * cos(i*0.0245437f)),rw.y + (k2*sin(i*0.0245437f)));
+		colorwheel[i].color = c;
+	}
+	rwind->draw(colorwheel);
+	rwind->display();
+	sf::Event sf_ev;
+	sf::RectangleShape s(sf::Vector2f(rw.x >> 1,15));
+	s.setPosition(((rw.x >> 1) + (rw.x >> 2)),static_cast<float>(rw.y)*0.15f);
+	s.setFillColor(rgb);
+	sf::RectangleShape s2(sf::Vector2f(rw.x >> 1,50));
+	s2.setPosition(((rw.x >> 1) + (rw.x >> 2)), 0.0f);
+	s2.setFillColor(sf::Color::Black);
+	sf_Button sf_bt(sf::Vector2f(((rw.x >> 1 ) + (rw.x >> 2)), 0.0f),sf::Vector2f(rw.x >> 1,50),sf::Color(0xff,0x63,0),fo,"Save Color");
+	bool buttonflag = true;
+	double ang;
+	while (buttonflag){
+		rwind->clear(sf::Color::White);
+		rwind->draw(s);
+		rwind->draw(s2);
+		rwind->draw(colorwheel);
+		sf_bt.draw(rwind);
+		while (rwind->pollEvent(sf_ev)){
+			if (sf_ev.type == sf::Event::Closed){
+				rwind->close();
+				swind->close();
+				exit(0);
+			}else if (sf_ev.type == sf::Event::MouseButtonPressed){
+				sf::Vector2i mousev = sf::Mouse::getPosition(*rwind);
+				mousev.x = mousev.x - rw.x;
+				mousev.y = mousev.y - rw.y;
+				if ((mousev.x < static_cast<int>(rw.x >> 1)) && (mousev.x > (-static_cast<int>(rw.x >> 1))) && (mousev.y < (static_cast<float>(rw.y) * -0.75f))){
+					buttonflag = false;
+					rgb = colorwheel[ang].color;
+				}
+				ang = atan2(mousev.y, mousev.x);
+				if (ang < 0){
+					ang = 2*3.14159265358 + ang;
+				}
+				ang = floor(ang * 40.743665);
+				s.setFillColor(colorwheel[ang].color);
+			}
+		}
+		rwind->display();
+	}
+}
 void blink_cursor(double interval, sf::Text *_text){
 	if (global_timer.getElapsedTime() >= sf::seconds(interval)){
 		tmp_st = std::string(_text->getString());
@@ -57,7 +143,9 @@ std::string dialog(std::string dialogtitle,std::string dialogdata){
 	return retstr;
 }
 int main(){
-	sf::RenderWindow window(sf::VideoMode(800,600),"Drawbook",sf::Style::Default);
+	sf::VideoMode v = sf::VideoMode::getDesktopMode();
+	v.width = v.width - 200;
+	sf::RenderWindow window(v,"Drawbook",sf::Style::Default);
 	sf::RenderWindow sideWindow(sf::VideoMode(200,300),"Tools",sf::Style::Close|sf::Style::Titlebar);
 	sf::Event event = {};
 	window.clear(sf::Color::White);
@@ -122,8 +210,7 @@ int main(){
 					text.setString("");
 					f=0;
 				}else if (mousevect.y < 100){
-					color++;
-					if (color > 5){color=0;}
+					color_wheel(&window,&sideWindow,&font);
 				}else if (mousevect.y < 150){
 					screenshot++;
 					windowvect=window.getSize();
@@ -203,27 +290,31 @@ int main(){
 		}
 		while (window.pollEvent(event)){
 			mousevect = sf::Mouse::getPosition(window);
-			if (event.type == sf::Event::Closed){
+			switch (event.type){
+			case sf::Event::Closed:
 				window.close();
 				sideWindow.close();
-			}else if (event.type == sf::Event::MouseButtonPressed){
+				break;
+			case sf::Event::MouseButtonPressed:
 				windowvect= window.getSize();
 				drawing=1 & (static_cast<int>(mousevect.x) > 0) & (static_cast<int>(mousevect.y) > 0) & (mousevect.x < static_cast<int>(windowvect.x)) & (mousevect.y < static_cast<int>(windowvect.y));
 				if (drawing == 1){
 					drawable_verts[f].first.emplace_back(mousevect);
 					drawable_verts[f].first.emplace_back(mousevect);
 				}
-				drawable_verts[f].second = rgb[color];
-			}else if (event.type == sf::Event::MouseButtonReleased){
+				drawable_verts[f].second = rgb;
+				break;
+			case sf::Event::MouseButtonReleased:
 				drawing=0;
 				drawable_verts[f].first.emplace_back(mousevect);
 				drawable_verts[f].first.shrink_to_fit();
-				drawable_verts[f].second = rgb[color];
+				drawable_verts[f].second = rgb;
 				drawable_verts.emplace_back();
 				f++;
 				_x1 = 0.0;
 				this_y1 = 0.0;
-			}else if (event.type == sf::Event::MouseMoved){
+				break;
+			case sf::Event::MouseMoved:
 				_x2=_x1;
 				_y2=this_y1;
 				_x1=event.mouseMove.x;
@@ -231,8 +322,9 @@ int main(){
 				if (((_x2 != _x1) || (_y2 != this_y1))&&((drawing==1)&&(_x1 > 0)&&(this_y1 > 0)&&(_x1 < windowvect.x)&&(this_y1 < windowvect.y))){
 					drawable_verts[f].first.emplace_back(sf::Vector2i(_x1,this_y1));
 				}
-				drawable_verts[f].second = rgb[color];
-			}else if (event.type==sf::Event::KeyPressed){
+				drawable_verts[f].second = rgb;
+				break;
+			case sf::Event::KeyPressed:
 				if (event.key.code==sf::Keyboard::Escape){
 					window.clear(sf::Color::White);
 					drawable_verts.clear();
@@ -248,7 +340,8 @@ int main(){
 						window.draw(text);
 					}
 				}
-			}else if (event.type==sf::Event::TextEntered){
+				break;
+			case sf::Event::TextEntered:
 				if (textmode==1){
 					if ((event.text.unicode == 10)||(event.text.unicode == 13)){
 						char rs = '\n';
@@ -266,6 +359,7 @@ int main(){
 						text.setString(text_string);
 					}
 				}
+				break;
 			}
 		}
 		window.display();
