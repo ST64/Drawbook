@@ -6,7 +6,7 @@ SFML version 2.4.2
 This program also uses simple-svg for the screenshot function.
 Provided binaries are compiled with the MinGW gcc compiler.
 
-This program is covered by the zlib/png license, and was written by ST64
+This program is covered by the GPL license, and was written by ST64
 
 Installation:
 
@@ -17,13 +17,5 @@ and the other is to run
 
 Documentation:
 
-Use the mouse to draw, the up and down arrows to change line size,
-the left and right arrows to choose between many colours, and
-o to change to text mode.
+Use the mouse to draw. The keyboard shortcuts that were present in past versions are no longer available, with the exception of ESC, which has the same effect as the "New File" button.
 
-The following commands are keyboard shortcuts which may be used in place of the on-screen buttons:
-ESCAPE to exit text mode or clear the screen
-0 to quit
-a and l to store and load screenshots, respectively
-w and s to change screenshot number,
-h for help

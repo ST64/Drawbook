@@ -6,7 +6,7 @@ int width_rect=0, height_rect=0, _width_rect=0, _height_rect=0, screenshot=0, co
 int f=0;
 sf::Font font;
 std::string text_string;
-const char charslist[]={' ','!','"','#','$','%','&','\'','(',')','*','+',',','-','.'};
+const char charslist[]={' ','!','"','#','$','%','&',39,'(',')','*','+',',','-','.','/'};
 const std::string buttonstrs[] = {"New File","Pick Color","Save File","Load File","Help","Text Mode"};
 sf::Clock global_timer;
 std::string tmp_st;
@@ -73,6 +73,13 @@ void color_wheel(sf::RenderWindow *rwind,sf::RenderWindow *swind, sf::Font *fo){
 		rwind->draw(s2);
 		rwind->draw(colorwheel);
 		sf_bt.draw(rwind);
+		while (swind->pollEvent(sf_ev)){
+			if (sf_ev.type == sf::Event::Closed){
+				rwind->close();
+				swind->close();
+				exit(0);
+			}
+		}
 		while (rwind->pollEvent(sf_ev)){
 			if (sf_ev.type == sf::Event::Closed){
 				rwind->close();
@@ -281,9 +288,7 @@ int main(){
 					text.setString("Welcome to Drawbook.\nPress the Up or Down button to change line size.\nDraw with the mouse.\nPress ESC to Continue. \nIf you appear to have lost text,\npress the text mode button again.");
 				}else{
 					textmode = textmode ^ 0x01;
-					if (textmode == 0){
-						text.setString("");
-					}
+					window.requestFocus();
 					window.clear(sf::Color::White);
 				}
 			}

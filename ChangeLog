@@ -1,6 +1,14 @@
+V1.0:
+Color Wheel added.
+V0.9:
+Button wrapper class added.
+Arbitrary filenames for save and load functions.
+V0.8:
+Added cursor for text, optimized memory usage.
+Button textures were removed and replaced by simpler drawing routines.
 V0.7:
 Changed engine to SFML from SDL 1.2 to enable opengl acceleration.
-Added 2 windows.
+Added second window.
 V0.6:
 Added button textures instead of using text.
 V0.5:
