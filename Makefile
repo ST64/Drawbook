@@ -1,6 +1,6 @@
 CXX = $(shell fltk-config --cxx)
-CXXFLAGS = $(shell fltk-config --cxxflags) -Og -g -std=c++11 -flto
-LINKFLTK = $(shell fltk-config --use-gl --ldflags) -g -flto
+CXXFLAGS = $(shell fltk-config --cxxflags) -O2 -std=c++11 -flto
+LINKFLTK = $(shell fltk-config --use-gl --ldflags) -flto
 POSTBUILD = fltk-config --post
 
 all: Drawbook
