@@ -11,7 +11,6 @@
 #include <cstdint>
 #include <iostream>
 #include "simple_svg_1.0.0.hpp"
-using namespace svg;
 using sPoint = std::pair<int,int>;
 using GLColor = std::tuple<double,double,double>;
 std::vector<std::pair<GLColor,std::vector<sPoint>>> drawable_verts;
@@ -111,12 +110,12 @@ class DrawbookAppWindow : public Fl_Window {
 			case -1: break;
 			case 1: break;
 			default:
-				Dimensions dimensions(mygl->w(),mygl->h());
-				Document doc(chooser.filename(),Layout(dimensions,Layout::TopLeft));
+				svg::Dimensions dimensions(mygl->w(),mygl->h());
+				svg::Document doc(chooser.filename(),svg::Layout(dimensions,svg::Layout::TopLeft));
 				for (int64_t i=0;i<static_cast<int64_t>(drawable_verts.size());i++){
-					Polyline polyline_a(Stroke(1,Color(std::get<0>(drawable_verts[i].first)*256.0,std::get<1>(drawable_verts[i].first)*256.0,std::get<2>(drawable_verts[i].first)*256.0)));
+					svg::Polyline polyline_a(svg::Stroke(1,svg::Color(std::get<0>(drawable_verts[i].first)*256.0,std::get<1>(drawable_verts[i].first)*256.0,std::get<2>(drawable_verts[i].first)*256.0)));
 					for (int32_t j=0;j<static_cast<int32_t>(drawable_verts[i].second.size());j++){
-							polyline_a << Point(drawable_verts[i].second[j].first,drawable_verts[i].second[j].second);
+							polyline_a << svg::Point(drawable_verts[i].second[j].first,drawable_verts[i].second[j].second);
 					}
 					if (drawable_verts[i].second.size() != 0){
 						doc << polyline_a;

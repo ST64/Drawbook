@@ -1,7 +1,6 @@
 CXX = $(shell fltk-config --cxx)
-CXXFLAGS = $(shell fltk-config --cxxflags) -O2 -std=c++11 -flto
-LINKFLTK = $(shell fltk-config --use-gl --libs --ldstaticflags) -ldl -flto
-STRIP = strip
+CXXFLAGS = $(shell fltk-config --cxxflags) -Og -g -std=c++11 -flto
+LINKFLTK = $(shell fltk-config --use-gl --ldflags) -g -flto
 POSTBUILD = fltk-config --post
 
 all: Drawbook
@@ -11,7 +10,6 @@ src/drawbook2.o: src/drawbook2.cpp
 
 Drawbook: src/drawbook2.o
 	$(CXX) -o $@ src/drawbook2.o $(LINKFLTK)
-	$(STRIP) $@
 	$(POSTBUILD) $@
 
 clean:
