@@ -1,4 +1,9 @@
-V1.0:
+V0.11.0:
+Switch from SFML to FLTK
+Clean up build system
+Various bugfixes
+Various optimizations
+V0.10.0:
 Color Wheel added.
 V0.9:
 Button wrapper class added.
